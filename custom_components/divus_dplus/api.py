@@ -14,17 +14,17 @@ class DivusDplusApi:
         self._systemOwner = "SYSTEM"
 
     async def get_devices(self):
-        async with self._get_surroundings(self._topSurroundingId) as topXml:
+        topXml = await self._get_surroundings(self._topSurroundingId)
 
-            environmentSurroundingId = topXml['getObjsFromId']['data'].filter(lambda x: x['NAME'] == self._environmentSurroundingName)['ID']
-            async with self._get_surroundings(environmentSurroundingId) as environmentXml:
-                devices = []
-                for room in environmentXml['getObjsFromId']['data'].filter(lambda x: x['OWNED_BY'] == self._systemOwner):
-                    roomId = room['ID']
-                    async with self._get_surroundings(roomId) as deviceXml:
-                        for device in deviceXml['getObjsFromId']['data']:
-                            devices.append(device)
-                return devices
+        environmentSurroundingId = topXml['getObjsFromId']['data'].filter(lambda x: x['NAME'] == self._environmentSurroundingName)['ID']
+        environmentXml = await self._get_surroundings(environmentSurroundingId)
+        devices = []
+        for room in environmentXml['getObjsFromId']['data'].filter(lambda x: x['OWNED_BY'] == self._systemOwner):
+            roomId = room['ID']
+            deviceXml = await self._get_surroundings(roomId)
+            for device in deviceXml['getObjsFromId']['data']:
+                devices.append(device)
+        return devices
 
     async def get_state(self, device_id):
         async with self._session.get(self._base + f"device/{device_id}/state") as r:
