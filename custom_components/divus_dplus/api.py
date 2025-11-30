@@ -11,7 +11,7 @@ class DivusDplusApi:
         self._sessionId = None
 
         # Constants for D+ systems
-        self._topSurroundingId = 187
+        self._topSurroundingId = "187"
         self._environmentSurroundingName = "_DPAD_PRODUCT_K3_MENU_ENVIRONMENTS"
         self._systemOwner = "SYSTEM"
 
@@ -38,7 +38,7 @@ class DivusDplusApi:
         
     async def _get_surroundings(self, surrounding_id):
         formData = {
-            "ids": urlencode(surrounding_id.__str__()),
+            "ids": urlencode(surrounding_id),
             "filter": "",
             "order": "ORDER_NUM%2CID+",
             "limit": "",
