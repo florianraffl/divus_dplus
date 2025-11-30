@@ -38,7 +38,7 @@ class DivusDplusApi:
         
     async def _get_surroundings(self, surrounding_id):
         formData = {
-            "ids": urlencode(surrounding_id),
+            "ids": urlencode(surrounding_id.__str__()),
             "filter": "",
             "order": "ORDER_NUM%2CID+",
             "limit": "",
