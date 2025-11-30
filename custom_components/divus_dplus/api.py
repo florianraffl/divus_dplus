@@ -1,4 +1,5 @@
 import aiohttp
+import xml.etree.ElementTree as ET
 
 class DivusDplusApi:
     def __init__(self, host, username, password):
@@ -45,7 +46,8 @@ class DivusDplusApi:
         }
         
         async with self._session.post(self._base + "surrounding.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
-            return await r.xml()
+            text = await r.text()
+            return ET.fromstring(text)
     
     async def _getSessionId(self):
 
@@ -59,9 +61,11 @@ class DivusDplusApi:
             "op": "login"
         }
         async with self._session.post(self._base + "login.php", data=formData) as r:
-            xml = await r.xml()
-            if "sessionId" in xml:
-                self._sessionId = xml["sessionId"]
+            text = await r.text()
+            xml = ET.fromstring(text)
+            sessionId = xml.find(".//sessionId")
+            if sessionId is not None:
+                self._sessionId = sessionId.text
                 return self._sessionId
             else:
                 raise Exception("Login failed")
