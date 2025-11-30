@@ -60,8 +60,8 @@ class DivusDplusApi:
             "context": "runtime",
             "op": "login"
         }
-        async with self._session.post(self._base + "login.php", data=formData) as r:
-            text = await r.text()
+        async with self._session.post(self._base + "login.php", data=formData) as resp:
+            text = await resp.text()
             xml = ET.fromstring(text)
             sessionId = xml.find(".//sessionId")
             if sessionId is not None:
