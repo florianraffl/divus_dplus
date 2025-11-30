@@ -1,5 +1,6 @@
 import aiohttp
 import xml.etree.ElementTree as ET
+from urllib.parse import urlencode
 
 class DivusDplusApi:
     def __init__(self, host, username, password):
@@ -37,12 +38,12 @@ class DivusDplusApi:
         
     async def _get_surroundings(self, surrounding_id):
         formData = {
-            "ids": surrounding_id,
+            "ids": urlencode(surrounding_id),
             "filter": "",
             "order": "ORDER_NUM%2CID+",
             "limit": "",
             "context": "runtime",
-            "sessionId": await self._getSessionId()
+            "sessionId": urlencode(await self._getSessionId())
         }
         
         async with self._session.post(self._base + "surrounding.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
@@ -55,8 +56,8 @@ class DivusDplusApi:
             return self._sessionId
 
         formData = {
-            "username": self._username,
-            "password": self._password,
+            "username": urlencode(self._username),
+            "password": urlencode(self._password),
             "context": "runtime",
             "op": "login"
         }
