@@ -1,0 +1,10 @@
+{
+  "domain": "divus_dplus",
+  "name": "DIVUS D+ KNX",
+  "version": "0.0.1",
+  "documentation": "https://github.com/florianraffl/divus_dplus",
+  "requirements": [],
+  "config_flow": true,
+  "codeowners": ["@florianraffl"],
+  "iot_class": "local_polling"
+}
