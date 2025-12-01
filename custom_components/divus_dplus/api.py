@@ -1,6 +1,6 @@
 import aiohttp
 import xml.etree.ElementTree as ET
-from urllib.parse import urlencode, quote
+from urllib.parse import urlencode
 
 class DivusDplusApi:
     def __init__(self, host, username, password):
@@ -56,12 +56,12 @@ class DivusDplusApi:
             return self._sessionId
 
         formData = {
-            "username": self._username,
-            "password": self._password,
+            "username": urlencode(self._username),
+            "password": urlencode(self._password),
             "context": "runtime",
             "op": "login"
         }
-        async with self._session.post(self._base + "login.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
+        async with self._session.post(self._base + "login.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
             text = await resp.text()
             xml = ET.fromstring(text)
             sessionId = xml.find(".//sessionId")
