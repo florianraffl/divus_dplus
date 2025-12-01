@@ -1,14 +1,16 @@
 import aiohttp
+import logging
 import xml.etree.ElementTree as ET
 from urllib.parse import urlencode
 
 class DivusDplusApi:
-    def __init__(self, host, username, password):
+    def __init__(self, host: str, username: str, password: str, logger: logging.Logger):
         self._base = f"http://{host}//www/modules/system/"
         self._username = username
         self._password = password
         self._session = aiohttp.ClientSession()
         self._sessionId = None
+        self._logger = logger
 
         # Constants for D+ systems
         self._topSurroundingId = "187"
@@ -56,13 +58,14 @@ class DivusDplusApi:
             return self._sessionId
 
         formData = {
-            "username": urlencode(self._username),
-            "password": urlencode(self._password),
+            "username": self._username,
+            "password": self._password,
             "context": "runtime",
             "op": "login"
         }
-        async with self._session.post(self._base + "login.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
+        async with self._session.post(self._base + "login.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
             text = await resp.text()
+            self._logger.debug(f"Login response: {text}")
             xml = ET.fromstring(text)
             sessionId = xml.find(".//sessionId")
             if sessionId is not None:

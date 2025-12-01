@@ -14,7 +14,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get("username")
     password = entry.data.get("password")
 
-    api = DivusDplusApi(host, username, password)
+    api = DivusDplusApi(host, username, password, _LOGGER)
 
     devices = await api.get_devices()
     
