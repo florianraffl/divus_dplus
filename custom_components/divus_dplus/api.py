@@ -1,6 +1,6 @@
 import aiohttp
 import xml.etree.ElementTree as ET
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 
 class DivusDplusApi:
     def __init__(self, host, username, password):
@@ -38,15 +38,15 @@ class DivusDplusApi:
         
     async def _get_surroundings(self, surrounding_id):
         formData = {
-            "ids": urlencode(surrounding_id),
+            "ids": surrounding_id,
             "filter": "",
             "order": "ORDER_NUM%2CID+",
             "limit": "",
             "context": "runtime",
-            "sessionId": urlencode(await self._getSessionId())
+            "sessionId": await self._getSessionId()
         }
         
-        async with self._session.post(self._base + "surrounding.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
+        async with self._session.post(self._base + "surrounding.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
             text = await r.text()
             return ET.fromstring(text)
     
@@ -56,12 +56,12 @@ class DivusDplusApi:
             return self._sessionId
 
         formData = {
-            "username": urlencode(self._username),
-            "password": urlencode(self._password),
+            "username": self._username,
+            "password": self._password,
             "context": "runtime",
             "op": "login"
         }
-        async with self._session.post(self._base + "login.php", data=formData) as resp:
+        async with self._session.post(self._base + "login.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
             text = await resp.text()
             xml = ET.fromstring(text)
             sessionId = xml.find(".//sessionId")
