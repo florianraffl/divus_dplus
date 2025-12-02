@@ -3,9 +3,11 @@ import logging
 import xml.etree.ElementTree as ET
 from urllib.parse import urlencode
 
+from divus_dplus.dtos import DeviceDto, DeviceStateDto
+
 class DivusDplusApi:
     def __init__(self, host: str, username: str, password: str, logger: logging.Logger):
-        self._base = f"http://{host}//www/modules/system/"
+        self._base = f"http://{host}/"
         self._username = username
         self._password = password
         self._session = aiohttp.ClientSession()
@@ -13,44 +15,95 @@ class DivusDplusApi:
         self._logger = logger
 
         # Constants for D+ systems
-        self._topSurroundingId = "187"
-        self._environmentSurroundingName = "_DPAD_PRODUCT_K3_MENU_ENVIRONMENTS"
-        self._systemOwner = "SYSTEM"
+        self._topSurroundingId = '187'
+        self._environmentSurroundingName = '_DPAD_PRODUCT_K3_MENU_ENVIRONMENTS'
+        self._systemOwner = 'SYSTEM'
 
-    async def get_devices(self):
-        topXml = await self._get_surroundings(self._topSurroundingId)
+    async def get_devices(self) -> list[DeviceDto]:
+        topJson = await self._get_surroundings(self._topSurroundingId)
 
-        environmentSurroundingId = topXml['getObjsFromId']['data'].filter(lambda x: x['NAME'] == self._environmentSurroundingName)['ID']
+        environmentSurroundingId = next(x['ID'] for x in topJson['getObjsFromId']['data'].values() if x['NAME'] == self._environmentSurroundingName)
         environmentXml = await self._get_surroundings(environmentSurroundingId)
-        devices = []
-        for room in environmentXml['getObjsFromId']['data'].filter(lambda x: x['OWNED_BY'] == self._systemOwner):
+        devices = list[DeviceDto]()
+        for room in filter(lambda x: x['OWNED_BY'] != self._systemOwner, environmentXml['getObjsFromId']['data'].values()):
             roomId = room['ID']
-            deviceXml = await self._get_surroundings(roomId)
-            for device in deviceXml['getObjsFromId']['data']:
+            deviceJson = await self._get_surroundings(roomId)
+            for deviceJson in filter(lambda x: x['OWNED_BY'] != self._systemOwner and x['ID'] != roomId, deviceJson['getObjsFromId']['data'].values()):
+                deviceSubElementsJson = await self._get_surroundings(deviceJson['ID'])
+                deviceSubElements = list(filter(lambda x: x['OWNED_BY'] != self._systemOwner and x['ID'] != deviceJson['ID'], deviceSubElementsJson['getObjsFromId']['data'].values()))
+                device = DeviceDto(
+                    id=deviceJson['ID'],
+                    parentId=roomId,
+                    parentName=room['NAME'],
+                    json=deviceJson,
+                    subElements=deviceSubElements
+                )
                 devices.append(device)
         return devices
 
-    async def get_state(self, device_id):
-        async with self._session.get(self._base + f"device/{device_id}/state") as r:
-            return await r.json()
+    async def get_states(self, device_id: list[str]) -> list[DeviceStateDto]:
 
-    async def set_state(self, device_id, value):
-        async with self._session.post(self._base + f"device/{device_id}/set", json=value) as r:
-            return await r.json()
+        formData = {
+            "args": "ID, CURRENT_VALUE",
+            "src": "DPADD_OBJECT",
+            "filter": "ID IN (" + ", ".join(device_id) + ")",
+            "type": "SELECT",
+            "context": "runtime",
+            "sessionid": await self._getSessionId()
+        }
+
+        async with self._session.post(self._base + "www/modules/system/api.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
+            response = await r.text()
+
+            xml = ET.fromstring(response)
+            payload = xml.find(".//payload")
+            data = payload.text if payload is not None else None
+            if data:
+                rows = data.splitlines()
+                rows = list(filter(lambda x: x.strip() != "" and x.startswith("Row"), rows))[1:]
+                states = []
+                for row in rows:
+                    row = row.strip()
+                    row = row[row.index(":") + 1:].strip()
+                    parts = row.split(",")
+                    if len(parts) >= 2:
+                        states.append(DeviceStateDto(id=parts[0].strip("'"), current_value=parts[1].strip("'")))
+                return states
+
+            return None
+
+    async def set_value(self, device_id: str, value: str):
+
+        xml_value = f'''<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <service-runonelement xmlns="urn:xmethods-dpadws">
+      <payload>{value}</payload>
+      <hashcode>NO-HASHCODE</hashcode>
+      <optionals>NO-OPTIONALS</optionals>
+      <callsource>WEB-DOMUSPAD_SOAP</callsource>
+      <sessionid>{await self._getSessionId()}</sessionid>
+      <waittime>10</waittime>
+      <idobject>{device_id}</idobject>
+      <operation>SETVALUE</operation>
+    </service-runonelement>
+  </soapenv:Body>
+</soapenv:Envelope>'''
+
+        async with self._session.post(self._base + f"/cgi-bin/dpadws", data=xml_value, headers={"Content-Type": "text/xml"}) as r:
+            return await r.text()
         
     async def _get_surroundings(self, surrounding_id):
         formData = {
             "ids": surrounding_id,
             "filter": "",
-            "order": "ORDER_NUM%2CID+",
+            "order": "ORDER_NUM,ID",
             "limit": "",
             "context": "runtime",
             "sessionId": await self._getSessionId()
         }
         
-        async with self._session.post(self._base + "surrounding.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
-            text = await r.text()
-            return ET.fromstring(text)
+        async with self._session.post(self._base + "www/modules/system/surrounding.php", data=urlencode(formData), headers={"Content-Type": "application/x-www-form-urlencoded"}) as r:
+            return await r.json()
     
     async def _getSessionId(self):
 
@@ -58,19 +111,19 @@ class DivusDplusApi:
             return self._sessionId
 
         formData = {
-            "username": urlencode(self._username),
-            "password": urlencode(self._password),
+            "username": self._username,
+            "password": self._password,
             "context": "runtime",
             "op": "login"
         }
 
-        text = urlencode(formData)
-        self._logger.debug(f"Logging in with data: {text}")
-        async with self._session.post(self._base + "login.php", data=text, headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
+        #text = urlencode(formData)
+        #self._logger.debug(f"Logging in with data: {text}")
+        async with self._session.post(self._base + "www/modules/system/user_login.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
             text = await resp.text()
             self._logger.debug(f"Login response: {text}")
             xml = ET.fromstring(text)
-            sessionId = xml.find(".//sessionId")
+            sessionId = xml.find("./sessionid")
             if sessionId is not None:
                 self._sessionId = sessionId.text
                 return self._sessionId

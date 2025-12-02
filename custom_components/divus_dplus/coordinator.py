@@ -1,14 +1,44 @@
+from divus_dplus.api import DivusDplusApi
+from divus_dplus.switch import DivusSwitchEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from datetime import timedelta
+from .const import DOMAIN
 
 class DivusCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass, api):
+    def __init__(self, hass, api: DivusDplusApi, entry):
         super().__init__(
             hass,
             name="divus_dplus",
             update_interval=timedelta(seconds=2),
         )
+        self.hass = hass
         self.api = api
+        self.entry = entry
 
     async def _async_update_data(self):
-        return await self.api.get_all_states()
+        devices = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
+
+        device_ids = [dev["id"] for dev in devices]
+        states = await self.api.get_states(device_ids)
+
+        for state in states:
+            device = next((dev for dev in devices if dev["id"] == state.id), None)
+            if device:
+                device.updateState(state)
+    
+    async def async_config_entry_first_refresh(self):
+
+        api_devices = await self.api.get_devices()
+
+        devices = []
+        for device in api_devices:
+            match device.json["TYPE"]:
+                case "EIBOBJECT":
+                    devices.append(DivusSwitchEntity(device))
+
+        self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
+            "api": self.api,
+            "coordinator": self,
+            "devices": devices,
+        }
+
