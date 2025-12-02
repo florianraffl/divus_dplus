@@ -1,5 +1,5 @@
-from divus_dplus.coordinator import DivusCoordinator
-from divus_dplus.dtos import DeviceDto, DeviceStateDto
+from custom_components.divus_dplus.coordinator import DivusCoordinator
+from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
 from homeassistant.components.switch import SwitchEntity
 from .const import DOMAIN
 

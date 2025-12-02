@@ -1,5 +1,5 @@
-from divus_dplus.api import DivusDplusApi
-from divus_dplus.switch import DivusSwitchEntity
+from custom_components.divus_dplus.api import DivusDplusApi
+from custom_components.divus_dplus.switch import DivusSwitchEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from datetime import timedelta
 from custom_components.divus_dplus.const import DOMAIN
