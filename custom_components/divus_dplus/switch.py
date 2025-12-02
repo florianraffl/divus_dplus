@@ -3,7 +3,13 @@ from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
 from homeassistant.components.switch import SwitchEntity
 from .const import DOMAIN
 
+import logging
+_LOGGER = logging.getLogger(__name__)
+
 async def async_setup_entry(hass, entry, async_add_entities):
+
+    _LOGGER.debug("Setting up DIVUS D+ switches for entry %s", entry.entry_id)
+
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     devices = hass.data[DOMAIN][entry.entry_id]["devices"]
 
