@@ -3,7 +3,7 @@ import logging
 import xml.etree.ElementTree as ET
 from urllib.parse import urlencode
 
-from divus_dplus.dtos import DeviceDto, DeviceStateDto
+from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
 
 class DivusDplusApi:
     def __init__(self, host: str, username: str, password: str, logger: logging.Logger):
