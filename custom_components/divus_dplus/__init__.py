@@ -1,9 +1,9 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, PLATFORMS
-from .api import DivusDplusApi
-from .coordinator import DivusCoordinator
+from custom_components.divus_dplus.const import DOMAIN, PLATFORMS
+from custom_components.divus_dplus.api import DivusDplusApi
+from custom_components.divus_dplus.coordinator import DivusCoordinator
 
 import logging
 _LOGGER = logging.getLogger(__name__)

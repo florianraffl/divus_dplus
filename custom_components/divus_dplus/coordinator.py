@@ -2,7 +2,7 @@ from divus_dplus.api import DivusDplusApi
 from divus_dplus.switch import DivusSwitchEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from datetime import timedelta
-from .const import DOMAIN
+from custom_components.divus_dplus.const import DOMAIN
 
 class DivusCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, api: DivusDplusApi, entry):
