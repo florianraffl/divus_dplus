@@ -21,12 +21,12 @@ class DivusSwitchEntity(SwitchEntity):
         self.coordinator = coordinator
         self.device = device
         self._attr_unique_id = device.id
-        self._attr_name = device.name
+        self._attr_name = device.json.NAME
+        self._is_on = device.json.CURRENT_VALUE == "1"
 
     @property
     def is_on(self):
-        state = self.coordinator.api.get_states([self.device.id])
-        return state[self.device.id] == "1"
+        return self._is_on
 
     async def async_turn_on(self):
         await self.coordinator.api.set_value(self.device.id, "1")
