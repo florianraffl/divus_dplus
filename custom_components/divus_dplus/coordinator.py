@@ -39,7 +39,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         for device in api_devices:
             match device.json["TYPE"]:
                 case "EIBOBJECT":
-                    devices.append(DivusSwitchEntity(device))
+                    devices.append(DivusSwitchEntity(self, device))
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
