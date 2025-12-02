@@ -8,7 +8,7 @@ from custom_components.divus_dplus.const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 class DivusCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass, api: DivusDplusApi, entry, logger: logging.Logger, async_add_entities: AddEntitiesCallback):
+    def __init__(self, hass, api: DivusDplusApi, entry, logger: logging.Logger):
         super().__init__(
             hass,
             name="divus_dplus",
@@ -18,7 +18,6 @@ class DivusCoordinator(DataUpdateCoordinator):
         self.hass = hass
         self.api = api
         self.entry = entry
-        self.async_add_entities = async_add_entities
 
     async def _async_update_data(self):
         devices = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
@@ -48,5 +47,4 @@ class DivusCoordinator(DataUpdateCoordinator):
             "coordinator": self,
             "devices": devices,
         }
-        self.async_add_entities(devices)
 

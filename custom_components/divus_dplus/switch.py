@@ -9,7 +9,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         DivusSwitchEntity(coordinator, dev)
-        for dev in devices if dev["type"] == "switch"
+        for dev in devices if type(dev) is DivusSwitchEntity
     ]
     async_add_entities(entities)
 

@@ -10,14 +10,14 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     host = entry.data["host"]
     username = entry.data.get("username")
     password = entry.data.get("password")
 
     api = DivusDplusApi(host, username, password, _LOGGER)
     
-    coordinator = DivusCoordinator(hass, api, entry, _LOGGER, async_add_entities)
+    coordinator = DivusCoordinator(hass, api, entry, _LOGGER)
     await coordinator.async_config_entry_first_refresh()
 
     _LOGGER.debug("Set up DIVUS D+ entry for host %s", host)
