@@ -1,5 +1,4 @@
 from custom_components.divus_dplus.api import DivusDplusApi
-from custom_components.divus_dplus.switch import DivusSwitchEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from datetime import timedelta
 from custom_components.divus_dplus.const import DOMAIN
@@ -27,6 +26,8 @@ class DivusCoordinator(DataUpdateCoordinator):
                 device.updateState(state)
     
     async def async_config_entry_first_refresh(self):
+        # Import here to avoid circular import
+        from custom_components.divus_dplus.switch import DivusSwitchEntity
 
         api_devices = await self.api.get_devices()
 
