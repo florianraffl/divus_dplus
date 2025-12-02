@@ -1,5 +1,6 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from custom_components.divus_dplus.const import DOMAIN, PLATFORMS
 from custom_components.divus_dplus.api import DivusDplusApi
@@ -9,18 +10,17 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     host = entry.data["host"]
     username = entry.data.get("username")
     password = entry.data.get("password")
 
     api = DivusDplusApi(host, username, password, _LOGGER)
     
-    api_devices = await api.get_devices()
-    coordinator = DivusCoordinator(hass, api, entry, _LOGGER)
+    coordinator = DivusCoordinator(hass, api, entry, _LOGGER, async_add_entities)
     await coordinator.async_config_entry_first_refresh()
-    
-    _LOGGER.debug(f"Found devices: {api_devices}")
+
+    _LOGGER.debug("Set up DIVUS D+ entry for host %s", host)
 
     return True
 

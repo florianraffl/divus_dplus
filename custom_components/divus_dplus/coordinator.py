@@ -1,13 +1,14 @@
 import logging
 from custom_components.divus_dplus.api import DivusDplusApi
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from datetime import timedelta
 from custom_components.divus_dplus.const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 class DivusCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass, api: DivusDplusApi, entry, logger: logging.Logger):
+    def __init__(self, hass, api: DivusDplusApi, entry, logger: logging.Logger, async_add_entities: AddEntitiesCallback):
         super().__init__(
             hass,
             name="divus_dplus",
@@ -17,6 +18,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         self.hass = hass
         self.api = api
         self.entry = entry
+        self.async_add_entities = async_add_entities
 
     async def _async_update_data(self):
         devices = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
@@ -27,7 +29,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         for state in states:
             device = next((dev for dev in devices if dev["id"] == state.id), None)
             if device:
-                device.updateState(state)
+                await device.updateState(state)
     
     async def async_config_entry_first_refresh(self):
         # Import here to avoid circular import
@@ -46,4 +48,5 @@ class DivusCoordinator(DataUpdateCoordinator):
             "coordinator": self,
             "devices": devices,
         }
+        self.async_add_entities(devices)
 
