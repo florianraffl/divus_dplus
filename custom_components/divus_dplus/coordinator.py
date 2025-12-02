@@ -1,14 +1,18 @@
+import logging
 from custom_components.divus_dplus.api import DivusDplusApi
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from datetime import timedelta
 from custom_components.divus_dplus.const import DOMAIN
 
+_LOGGER = logging.getLogger(__name__)
+
 class DivusCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass, api: DivusDplusApi, entry):
+    def __init__(self, hass, api: DivusDplusApi, entry, logger: logging.Logger):
         super().__init__(
             hass,
             name="divus_dplus",
             update_interval=timedelta(seconds=2),
+            logger=logger,
         )
         self.hass = hass
         self.api = api
