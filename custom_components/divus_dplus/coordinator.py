@@ -1,7 +1,6 @@
 import logging
 from custom_components.divus_dplus.api import DivusDplusApi
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from datetime import timedelta
 from custom_components.divus_dplus.const import DOMAIN
 

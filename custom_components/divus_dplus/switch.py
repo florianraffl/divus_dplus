@@ -8,7 +8,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
 
-    _LOGGER.debug("Setting up DIVUS D+ switches for entry %s", entry.entry_id)
+    _LOGGER.info("Setting up DIVUS D+ switches for entry %s", entry.entry_id)
 
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     devices = hass.data[DOMAIN][entry.entry_id]["devices"]
@@ -29,6 +29,7 @@ class DivusSwitchEntity(SwitchEntity):
         self._attr_unique_id = device.id
         self._attr_name = device.json['NAME']
         self._is_on = device.json['CURRENT_VALUE'] == "1"
+        _LOGGER.debug("Adding switch device: %s", self._attr_name)
 
     @property
     def is_on(self):
