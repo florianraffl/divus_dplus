@@ -22,6 +22,7 @@ class DivusDplusApi:
     async def get_devices(self) -> list[DeviceDto]:
         topJson = await self._get_surroundings(self._topSurroundingId)
 
+        self._logger.info("Retrieved top surroundings")
         environmentSurroundingId = next(x['ID'] for x in topJson['getObjsFromId']['data'].values() if x['NAME'] == self._environmentSurroundingName)
         environmentXml = await self._get_surroundings(environmentSurroundingId)
         devices = list[DeviceDto]()
@@ -39,6 +40,7 @@ class DivusDplusApi:
                     subElements=deviceSubElements
                 )
                 devices.append(device)
+        self._logger.info(f"Retrieved {len(devices)} devices")
         return devices
 
     async def get_states(self, device_id: list[str]) -> list[DeviceStateDto]:
@@ -68,6 +70,7 @@ class DivusDplusApi:
                     parts = row.split(",")
                     if len(parts) >= 2:
                         states.append(DeviceStateDto(id=parts[0].strip("'"), current_value=parts[1].strip("'")))
+                self._logger.info(f"Retrieved {len(states)} device states")
                 return states
 
             return None
@@ -90,6 +93,7 @@ class DivusDplusApi:
 </soapenv:Envelope>'''
 
         async with self._session.post(self._base + f"/cgi-bin/dpadws", data=xml_value, headers={"Content-Type": "text/xml"}) as r:
+            self._logger.info(f"Set value for device {device_id} to {value}")
             return await r.text()
         
     async def _get_surroundings(self, surrounding_id):
@@ -121,11 +125,12 @@ class DivusDplusApi:
         #self._logger.debug(f"Logging in with data: {text}")
         async with self._session.post(self._base + "www/modules/system/user_login.php", data=formData, headers={"Content-Type": "application/x-www-form-urlencoded"}) as resp:
             text = await resp.text()
-            self._logger.debug(f"Login response: {text}")
             xml = ET.fromstring(text)
             sessionId = xml.find("./sessionid")
             if sessionId is not None:
                 self._sessionId = sessionId.text
+                self._logger.debug(f"Login successful")
                 return self._sessionId
             else:
+                self._logger.error("Login failed")
                 raise Exception("Login failed")

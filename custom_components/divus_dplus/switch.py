@@ -1,12 +1,15 @@
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 
 import logging
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
 
     _LOGGER.info("Setting up DIVUS D+ switches for entry %s", entry.entry_id)
 
