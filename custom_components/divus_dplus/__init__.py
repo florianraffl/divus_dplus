@@ -22,6 +22,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
     _LOGGER.debug("Set up DIVUS D+ entry for host %s", host)
 
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    
     return True
 
 
@@ -30,3 +32,4 @@ async def async_unload_entry(hass, entry):
     if unload:
         hass.data[DOMAIN].pop(entry.entry_id)
     return unload
+
