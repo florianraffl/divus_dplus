@@ -16,11 +16,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     devices = hass.data[DOMAIN][entry.entry_id]["devices"]
 
-    entities = [
-        DivusSwitchEntity(coordinator, dev)
-        for dev in devices if type(dev) is DivusSwitchEntity
-    ]
-    async_add_entities(entities)
+    # entities = [
+    #     DivusSwitchEntity(coordinator, dev)
+    #     for dev in devices if type(dev) is DivusSwitchEntity
+    # ]
+    async_add_entities(devices)
 
 class DivusSwitchEntity(SwitchEntity):
 
