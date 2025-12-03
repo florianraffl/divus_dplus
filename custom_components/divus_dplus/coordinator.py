@@ -19,6 +19,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         self.entry = entry
 
     async def _async_update_data(self):
+        _LOGGER.debug("Updating DIVUS D+ data for entry %s", self.entry.entry_id)
         devices = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
 
         device_ids = [dev["id"] for dev in devices]
