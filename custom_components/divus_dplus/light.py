@@ -8,8 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.util.color import value_to_brightness
-from homeassistant.util.percentage import percentage_to_ranged_value
+from homeassistant.util.color import value_to_brightness, brightness_to_value
 from .const import DOMAIN
 
 import logging
@@ -83,7 +82,8 @@ class DivusDimLightEntity(DivusLightEntity):
     async def async_turn_on(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "1")
         _LOGGER.debug("Turning on light %s with brightness %s", self._attr_name, kwargs)
-        value_in_range = math.ceil(percentage_to_ranged_value((1, 255), kwargs['brightness']))
+        value_in_range = math.ceil(brightness_to_value((1, 100), kwargs['brightness']))
+        _LOGGER.debug("Setting dim value for light %s to %s", self._attr_name, value_in_range)
         await self.coordinator.api.set_value(self.dimDeviceId, str(value_in_range))
     async def async_turn_off(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "0")
