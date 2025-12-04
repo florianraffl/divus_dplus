@@ -1,4 +1,6 @@
 from enum import Enum
+import math
+from typing import Optional
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
 from homeassistant.components.light import LightEntity
@@ -6,6 +8,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util.color import value_to_brightness
+from homeassistant.util.percentage import percentage_to_ranged_value
 from .const import DOMAIN
 
 import logging
@@ -30,7 +34,7 @@ class DivusLightEntity(LightEntity, CoordinatorEntity):
         self.device = device
         self._attr_unique_id = device.id
         self._attr_name = device.json['NAME']
-        _LOGGER.debug("Adding switch device: %s", self._attr_name)
+        _LOGGER.debug("Adding light device: %s", self._attr_name)
 
     @property
     def is_on(self):
@@ -56,23 +60,38 @@ class DivusDimLightEntity(DivusLightEntity):
         currentSwitchValueDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "10"), None)
         self.switchDeviceId = currentSwitchValueDevice['ID'] if currentSwitchValueDevice else None
         self._is_on = currentSwitchValueDevice['CURRENT_VALUE'] != "0" if currentSwitchValueDevice else False
+
+        self.updateDeviceIds = [self.dimDeviceId, self.switchDeviceId]
     
     async def updateState(self, state: DeviceStateDto):
+        if state.id == self.switchDeviceId:
+            self._is_on = state.current_value != "0"
+        elif state.id == self.dimDeviceId:
+            self.dimValue = state.current_value
         return
-        # currentDimValueDevice = next((dev for dev in state.subElements if dev['RENDERING_ID'] == "11"), None)
+    
+    @property
+    def brightness(self) -> Optional[int]:
+        """Return the current brightness."""
+        return value_to_brightness((0, 1), self.dimValue)
+
 
     async def async_turn_on(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "1")
+        _LOGGER.debug("Turning on light %s with brightness %s", self._attr_name, kwargs)
         # await self.coordinator.api.set_value(self.dimDeviceId, kwargs[ATTR_BRIGHTNESS])
+        value_in_range = math.ceil(percentage_to_ranged_value((0, 1), kwargs['']))
+        await self.coordinator.api.set_value(self.dimDeviceId, str(value_in_range))
     async def async_turn_off(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "0")
-        # await self.coordinator.api.set_value(self.dimDeviceId, kwargs[ATTR_BRIGHTNESS])
 
 class DivusSwitchLightEntity(DivusLightEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
         super().__init__(coordinator, device)
         self.type = TypeEnum.SWITCH
         self._is_on = device.json['CURRENT_VALUE'] == "1"
+
+        self.updateDeviceIds = [self._attr_unique_id]
     
     async def updateState(self, state: DeviceStateDto):
         self._is_on = state.current_value == "1"

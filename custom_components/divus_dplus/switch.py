@@ -32,6 +32,8 @@ class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
         self._is_on = device.json['CURRENT_VALUE'] == "1"
         _LOGGER.debug("Adding switch device: %s", self._attr_name)
 
+        self.updateDeviceIds = [self._attr_unique_id]
+
     @property
     def is_on(self):
         return self._is_on
