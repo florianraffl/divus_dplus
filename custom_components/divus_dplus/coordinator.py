@@ -21,13 +21,15 @@ class DivusCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         _LOGGER.debug("Updating DIVUS D+ data for entry %s", self.entry.entry_id)
-        devices = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
 
-        device_ids = [dev["id"] for dev in devices]
+        from custom_components.divus_dplus.switch import DivusSwitchEntity
+        devices: list[DivusSwitchEntity] = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
+
+        device_ids = [dev.device.id for dev in devices]
         states = await self.api.get_states(device_ids)
 
         for state in states:
-            device = next((dev for dev in devices if dev["id"] == state.id), None)
+            device = next((dev for dev in devices if dev.device.id == state.id), None)
             if device:
                 await device.updateState(state)
     
