@@ -4,6 +4,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 
 import logging
@@ -17,7 +18,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     devices = hass.data[DOMAIN][entry.entry_id]["devices"]
     async_add_entities(devices)
 
-class DivusSwitchEntity(SwitchEntity):
+class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
 
     _is_on: bool = False
 
