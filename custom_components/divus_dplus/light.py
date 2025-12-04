@@ -58,7 +58,8 @@ class DivusDimLightEntity(DivusLightEntity):
         self._is_on = currentSwitchValueDevice['CURRENT_VALUE'] != "0" if currentSwitchValueDevice else False
     
     async def updateState(self, state: DeviceStateDto):
-        currentDimValueDevice = next((dev for dev in state.subElements if dev['RENDERING_ID'] == "11"), None)
+        return
+        # currentDimValueDevice = next((dev for dev in state.subElements if dev['RENDERING_ID'] == "11"), None)
 
     async def async_turn_on(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "1")
