@@ -3,7 +3,7 @@ import math
 from typing import Optional
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
-from homeassistant.components.light import LightEntity
+from homeassistant.components.light import LightEntity, ColorMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -73,7 +73,12 @@ class DivusDimLightEntity(DivusLightEntity):
     @property
     def brightness(self) -> Optional[int]:
         """Return the current brightness."""
+        _LOGGER.debug("Getting brightness for light %s with dimValue %s", self._attr_name, self.dimValue)
         return value_to_brightness((0, 1), self.dimValue)
+    
+    @property
+    def color_mode(self) -> str:
+        return ColorMode.BRIGHTNESS
 
 
     async def async_turn_on(self, **kwargs):
@@ -92,6 +97,10 @@ class DivusSwitchLightEntity(DivusLightEntity):
         self._is_on = device.json['CURRENT_VALUE'] == "1"
 
         self.updateDeviceIds = [self._attr_unique_id]
+    
+    @property
+    def color_mode(self) -> str:
+        return ColorMode.ONOFF
     
     async def updateState(self, state: DeviceStateDto):
         self._is_on = state.current_value == "1"
