@@ -27,7 +27,7 @@ class DivusLightEntity(LightEntity, CoordinatorEntity):
 
     @property
     def supported_color_modes(self) -> set[ColorMode]:
-        return {ColorMode.ONOFF, ColorMode.BRIGHTNESS}
+        return [ColorMode.ONOFF, ColorMode.BRIGHTNESS]
 
     _is_on: bool = False
 
