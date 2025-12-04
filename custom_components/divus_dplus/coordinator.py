@@ -22,8 +22,8 @@ class DivusCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         _LOGGER.debug("Updating DIVUS D+ data for entry %s", self.entry.entry_id)
 
-        from custom_components.divus_dplus.switch import DivusSwitchEntity
-        devices: list[DivusSwitchEntity] = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
+        from homeassistant.helpers.entity import Entity
+        devices: list[Entity] = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
 
         device_ids = [dev.device.id for dev in devices]
         states = await self.api.get_states(device_ids)
@@ -36,14 +36,20 @@ class DivusCoordinator(DataUpdateCoordinator):
     async def async_config_entry_first_refresh(self):
         # Import here to avoid circular import
         from custom_components.divus_dplus.switch import DivusSwitchEntity
+        from custom_components.divus_dplus.light import DivusLightEntity
 
         api_devices = await self.api.get_devices()
 
         devices = []
         for device in api_devices:
-            match device.json["TYPE"]:
-                case "EIBOBJECT":
+            optionalP = device.json['OPTIONALP'].split('|')
+            category = filter(lambda x: x.startswith('category='), optionalP).replace('category=', '').strip("'")
+
+            match (device.json["TYPE"], category):
+                case ("EIBOBJECT", _):
                     devices.append(DivusSwitchEntity(self, device))
+                case (_, "lighting"):
+                    devices.append(DivusLightEntity(self, device))
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
