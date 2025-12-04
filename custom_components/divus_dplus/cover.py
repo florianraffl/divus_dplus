@@ -52,11 +52,11 @@ class DivusCoverEntity(CoverEntity, CoordinatorEntity):
         """Stop the cover."""
         await self.coordinator.api.set_value(self.shutterShortId, "1")
 
-    async def async_tilt_open_cover(self):
+    async def async_open_cover_tilt(self):
         """Tilt open the cover."""
         await self.coordinator.api.set_value(self.shutterShortId, "0")
 
-    async def async_tilt_close_cover(self):
+    async def async_close_cover_tilt(self):
         """Tilt close the cover."""
         await self.coordinator.api.set_value(self.shutterShortId, "1")
 
