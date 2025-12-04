@@ -25,6 +25,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class DivusLightEntity(LightEntity, CoordinatorEntity):
 
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        return {ColorMode.ONOFF, ColorMode.BRIGHTNESS}
+
     _is_on: bool = False
 
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
