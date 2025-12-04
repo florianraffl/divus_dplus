@@ -1,6 +1,5 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from custom_components.divus_dplus.const import DOMAIN, PLATFORMS
 from custom_components.divus_dplus.api import DivusDplusApi
@@ -23,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     _LOGGER.debug("Set up DIVUS D+ entry for host %s", host)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    
+
     return True
 
 

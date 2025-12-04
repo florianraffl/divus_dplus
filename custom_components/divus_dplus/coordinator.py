@@ -10,9 +10,10 @@ class DivusCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, api: DivusDplusApi, entry, logger: logging.Logger):
         super().__init__(
             hass,
+            _LOGGER,
             name="divus_dplus",
             update_interval=timedelta(seconds=2),
-            logger=logger,
+            always_update=True,
         )
         self.hass = hass
         self.api = api
