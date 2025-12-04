@@ -1,3 +1,4 @@
+from itertools import groupby
 import logging
 from custom_components.divus_dplus.api import DivusDplusApi
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -62,6 +63,9 @@ class DivusCoordinator(DataUpdateCoordinator):
                     self.devices.append(DivusSwitchEntity(self, device))
                 case ("CONTAINER", "shutters"):
                     self.devices.append(DivusCoverEntity(self, device))
+
+        for roomName, devices in groupby(api_devices, lambda d: d.parentName):
+            _LOGGER.info(f"Room '{roomName}' has {len(list(devices))} devices.")
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
