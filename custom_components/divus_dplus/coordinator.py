@@ -44,7 +44,9 @@ class DivusCoordinator(DataUpdateCoordinator):
         for device in api_devices:
             optionalP = device.json['OPTIONALP'].split('|')
             _LOGGER.debug("Device %s optionalP: %s", device.json['NAME'], optionalP)
-            category = next((x for x in optionalP if x.startswith('category=')), None).replace('category=', '').strip("'")
+            category = next((x for x in optionalP if x.startswith('category=')), None)
+            if category:
+                category = category.replace('category=', '').strip("'")
 
             match (device.json["TYPE"], category):
                 case ("EIBOBJECT", "lighting"):
