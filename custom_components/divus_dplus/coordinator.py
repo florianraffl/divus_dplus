@@ -15,21 +15,21 @@ class DivusCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=2),
             always_update=True,
         )
+        from homeassistant.helpers.entity import Entity
+
         self.hass = hass
         self.api = api
         self.entry = entry
+        self.devices: list[Entity]
 
     async def _async_update_data(self):
         _LOGGER.debug("Updating DIVUS D+ data for entry %s", self.entry.entry_id)
 
-        from homeassistant.helpers.entity import Entity
-        devices: list[Entity] = self.hass.data[DOMAIN][self.entry.entry_id]["devices"]
-
-        device_ids = [dev.device.id for dev in devices]
+        device_ids = [dev.device.id for dev in self.devices]
         states = await self.api.get_states(device_ids)
 
         for state in states:
-            device = next((dev for dev in devices if dev.device.id == state.id), None)
+            device = next((dev for dev in self.devices if dev.device.id == state.id), None)
             if device:
                 await device.updateState(state)
     
@@ -40,7 +40,7 @@ class DivusCoordinator(DataUpdateCoordinator):
 
         api_devices = await self.api.get_devices()
 
-        devices = []
+        self.devices = []
         for device in api_devices:
             optionalP = device.json['OPTIONALP'].split('|')
             _LOGGER.debug("Device %s optionalP: %s", device.json['NAME'], optionalP)
@@ -50,15 +50,13 @@ class DivusCoordinator(DataUpdateCoordinator):
 
             match (device.json["TYPE"], category):
                 case ("EIBOBJECT", "lighting"):
-                    devices.append(DivusSwitchLightEntity(self, device))
+                    self.devices.append(DivusSwitchLightEntity(self, device))
                 case ("CONTAINER", "lighting"):
-                    devices.append(DivusDimLightEntity(self, device))
+                    self.devices.append(DivusDimLightEntity(self, device))
                 case ("EIBOBJECT", _):
-                    devices.append(DivusSwitchEntity(self, device))
-
+                    self.devices.append(DivusSwitchEntity(self, device))
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
             "coordinator": self,
-            "devices": devices,
         }
 
