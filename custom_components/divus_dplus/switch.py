@@ -14,8 +14,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     _LOGGER.info("Setting up DIVUS D+ switches for entry %s", entry.entry_id)
 
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     devices = hass.data[DOMAIN][entry.entry_id]["devices"]
+    devices = [dev for dev in devices if isinstance(dev, DivusSwitchEntity)]
     async_add_entities(devices)
 
 class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):

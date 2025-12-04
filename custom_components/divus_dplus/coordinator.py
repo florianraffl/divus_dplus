@@ -36,20 +36,22 @@ class DivusCoordinator(DataUpdateCoordinator):
     async def async_config_entry_first_refresh(self):
         # Import here to avoid circular import
         from custom_components.divus_dplus.switch import DivusSwitchEntity
-        from custom_components.divus_dplus.light import DivusLightEntity
+        from custom_components.divus_dplus.light import DivusDimLightEntity, DivusSwitchLightEntity
 
         api_devices = await self.api.get_devices()
 
         devices = []
         for device in api_devices:
             optionalP = device.json['OPTIONALP'].split('|')
-            category = filter(lambda x: x.startswith('category='), optionalP).replace('category=', '').strip("'")
+            category = next((x for x in optionalP if x.startswith('category=')), None).replace('category=', '').strip("'")
 
             match (device.json["TYPE"], category):
+                case ("EIBOBJECT", "lighting"):
+                    devices.append(DivusSwitchLightEntity(self, device))
+                case ("CONTAINER", "lighting"):
+                    devices.append(DivusDimLightEntity(self, device))
                 case ("EIBOBJECT", _):
                     devices.append(DivusSwitchEntity(self, device))
-                case (_, "lighting"):
-                    devices.append(DivusLightEntity(self, device))
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
