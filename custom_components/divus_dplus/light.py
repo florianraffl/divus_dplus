@@ -37,7 +37,7 @@ class DivusLightEntity(LightEntity, CoordinatorEntity):
         self.device = device
         self._attr_unique_id = device.id
         self._attr_name = device.json['NAME']
-        _LOGGER.debug("Adding light device: %s", self._attr_name)
+        _LOGGER.debug("Adding light device: %s of type %s", self._attr_name, type(self))
 
     @property
     def is_on(self):
