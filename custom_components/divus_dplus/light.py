@@ -24,10 +24,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class DivusLightEntity(LightEntity, CoordinatorEntity):
 
-    @property
-    def supported_color_modes(self) -> set[ColorMode]:
-        return [ColorMode.ONOFF, ColorMode.BRIGHTNESS]
-
     _is_on: bool = False
 
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
@@ -53,6 +49,11 @@ class TypeEnum(Enum):
     SWITCH = "switch"
 
 class DivusDimLightEntity(DivusLightEntity):
+
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        return [ColorMode.BRIGHTNESS]
+    
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
         super().__init__(coordinator, device)
         self.type = TypeEnum.DIMABLE
@@ -89,6 +90,11 @@ class DivusDimLightEntity(DivusLightEntity):
         await self.coordinator.api.set_value(self.switchDeviceId, "0")
 
 class DivusSwitchLightEntity(DivusLightEntity):
+
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        return [ColorMode.ONOFF]
+    
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
         super().__init__(coordinator, device)
         self.type = TypeEnum.SWITCH
