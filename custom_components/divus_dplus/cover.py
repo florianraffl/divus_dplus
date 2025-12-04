@@ -30,7 +30,7 @@ class DivusCoverEntity(CoverEntity, CoordinatorEntity):
         self._attr_unique_id = device.id
         self._attr_name = device.json['NAME']
         self._attr_device_class = CoverDeviceClass.SHUTTER
-        self._attr_supported_features = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP | CoverEntityFeature.TILT_OPEN | CoverEntityFeature.TILT_CLOSE
+        self._attr_supported_features = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP | CoverEntityFeature.OPEN_TILT | CoverEntityFeature.CLOSE_TILT
 
         shutterLongDeviceId = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "25"), None)
         self.shutterLongId = shutterLongDeviceId['ID'] if shutterLongDeviceId else None
