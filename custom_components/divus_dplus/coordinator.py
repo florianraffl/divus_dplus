@@ -25,7 +25,7 @@ class DivusCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         _LOGGER.debug("Updating DIVUS D+ data for entry %s", self.entry.entry_id)
 
-        device_ids = [dev.device.updateDeviceIds for dev in self.devices]
+        device_ids = [dev.updateDeviceIds for dev in self.devices]
         device_ids = [
             x
             for xs in device_ids
