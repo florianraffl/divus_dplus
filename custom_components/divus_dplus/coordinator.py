@@ -48,7 +48,6 @@ class DivusCoordinator(DataUpdateCoordinator):
         self.devices = []
         for device in api_devices:
             optionalP = device.json['OPTIONALP'].split('|')
-            _LOGGER.debug("Device %s optionalP: %s", device.json['NAME'], optionalP)
             category = next((x for x in optionalP if x.startswith('category=')), None)
             if category:
                 category = category.replace('category=', '').strip("'")
