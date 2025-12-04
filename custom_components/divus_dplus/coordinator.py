@@ -34,7 +34,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         states = await self.api.get_states(device_ids)
 
         for state in states:
-            device = next((dev for dev in self.devices if state.id in dev.device.updateDeviceIds), None)
+            device = next((dev for dev in self.devices if state.id in dev.updateDeviceIds), None)
             if device:
                 await device.updateState(state)
     
