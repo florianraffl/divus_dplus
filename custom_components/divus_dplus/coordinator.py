@@ -42,6 +42,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         # Import here to avoid circular import
         from custom_components.divus_dplus.switch import DivusSwitchEntity
         from custom_components.divus_dplus.light import DivusDimLightEntity, DivusSwitchLightEntity
+        from divus_dplus.cover import DivusCoverEntity
 
         api_devices = await self.api.get_devices()
 
@@ -59,6 +60,9 @@ class DivusCoordinator(DataUpdateCoordinator):
                     self.devices.append(DivusDimLightEntity(self, device))
                 case ("EIBOBJECT", _):
                     self.devices.append(DivusSwitchEntity(self, device))
+                case ("CONTAINER", "shutters"):
+                    self.devices.append(DivusCoverEntity(self, device))
+
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
             "coordinator": self,
