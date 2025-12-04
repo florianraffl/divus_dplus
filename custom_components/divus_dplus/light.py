@@ -60,11 +60,18 @@ class DivusDimLightEntity(DivusLightEntity):
     async def updateState(self, state: DeviceStateDto):
         currentDimValueDevice = next((dev for dev in state.subElements if dev['RENDERING_ID'] == "11"), None)
 
+    async def async_turn_on(self, **kwargs):
+        await self.coordinator.api.set_value(self.switchDeviceId, "1")
+        # await self.coordinator.api.set_value(self.dimDeviceId, kwargs[ATTR_BRIGHTNESS])
+    async def async_turn_off(self, **kwargs):
+        await self.coordinator.api.set_value(self.switchDeviceId, "0")
+        # await self.coordinator.api.set_value(self.dimDeviceId, kwargs[ATTR_BRIGHTNESS])
+
 class DivusSwitchLightEntity(DivusLightEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
         super().__init__(coordinator, device)
         self.type = TypeEnum.SWITCH
-        self._is_on = device['CURRENT_VALUE']
+        self._is_on = device.json['CURRENT_VALUE'] == "1"
     
     async def updateState(self, state: DeviceStateDto):
         self._is_on = state.current_value == "1"
