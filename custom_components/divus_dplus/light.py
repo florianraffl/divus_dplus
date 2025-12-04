@@ -78,7 +78,7 @@ class DivusDimLightEntity(DivusLightEntity):
     def brightness(self) -> Optional[int]:
         """Return the current brightness."""
         _LOGGER.debug("Getting brightness for light %s with dimValue %s", self._attr_name, self.dimValue)
-        return value_to_brightness((1, 100), self.dimValue)
+        return value_to_brightness((1, 100), int(self.dimValue))
 
     async def async_turn_on(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "1")
