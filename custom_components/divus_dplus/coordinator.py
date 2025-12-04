@@ -42,7 +42,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         # Import here to avoid circular import
         from custom_components.divus_dplus.switch import DivusSwitchEntity
         from custom_components.divus_dplus.light import DivusDimLightEntity, DivusSwitchLightEntity
-        from divus_dplus.cover import DivusCoverEntity
+        from custom_components.divus_dplus.cover import DivusCoverEntity
 
         api_devices = await self.api.get_devices()
 
