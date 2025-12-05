@@ -70,7 +70,7 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
             self._attr_is_closed = state.current_value == "1"
 
 
-class DivusRoomCoverEntity(CoverEntity, CoordinatorEntity):
+class DivusRoomCoverEntity(DivusCoverEntity):
 
     def __init__(self, coordinator: DivusCoordinator,
         deviceId: str,
