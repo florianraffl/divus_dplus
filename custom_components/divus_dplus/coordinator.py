@@ -43,29 +43,40 @@ class DivusCoordinator(DataUpdateCoordinator):
         # Import here to avoid circular import
         from custom_components.divus_dplus.switch import DivusSwitchEntity
         from custom_components.divus_dplus.light import DivusDimLightEntity, DivusSwitchLightEntity
-        from custom_components.divus_dplus.cover import DivusCoverEntity
+        from custom_components.divus_dplus.cover import DivusDeviceCoverEntity, DivusRoomCoverEntity
 
         api_devices = await self.api.get_devices()
 
         self.devices = []
-        for device in api_devices:
-            optionalP = device.json['OPTIONALP'].split('|')
-            category = next((x for x in optionalP if x.startswith('category=')), None)
-            if category:
-                category = category.replace('category=', '').strip("'")
-
-            match (device.json["TYPE"], category):
-                case ("EIBOBJECT", "lighting"):
-                    self.devices.append(DivusSwitchLightEntity(self, device))
-                case ("CONTAINER", "lighting"):
-                    self.devices.append(DivusDimLightEntity(self, device))
-                case ("EIBOBJECT", _):
-                    self.devices.append(DivusSwitchEntity(self, device))
-                case ("CONTAINER", "shutters"):
-                    self.devices.append(DivusCoverEntity(self, device))
-
         for roomName, devices in groupby(api_devices, lambda d: d.parentName):
-            _LOGGER.info(f"Room '{roomName}' has {len(list(devices))} devices.")
+            devices = list(devices)
+            _LOGGER.info(f"Room '{roomName}' has {len(devices)} devices.")
+
+            roomEntities = []
+            for device in devices:
+                optionalP = device.json['OPTIONALP'].split('|')
+                category = next((x for x in optionalP if x.startswith('category=')), None)
+                if category:
+                    category = category.replace('category=', '').strip("'")
+
+                match (device.json["TYPE"], category):
+                    case ("EIBOBJECT", "lighting"):
+                        roomEntities.append(DivusSwitchLightEntity(self, device))
+                    case ("CONTAINER", "lighting"):
+                        roomEntities.append(DivusDimLightEntity(self, device))
+                    case ("EIBOBJECT", _):
+                        roomEntities.append(DivusSwitchEntity(self, device))
+                    case ("CONTAINER", "shutters"):
+                        roomEntities.append(DivusDeviceCoverEntity(self, device))
+
+            coverEntities: list[DivusDeviceCoverEntity] = list(filter(lambda d: isinstance(d, DivusDeviceCoverEntity), roomEntities))
+            if(len(coverEntities) > 0):
+                shutterLongIds = [dev.shutterLongId for dev in coverEntities if dev.shutterLongId]
+                shutterShortIds = [dev.shutterShortId for dev in coverEntities if dev.shutterShortId]
+                roomEntities.append(DivusRoomCoverEntity(self, devices[0].parentId, roomName, shutterLongIds, shutterShortIds, 
+                    "1" if all(dev._attr_is_closed for dev in coverEntities) else "0"))
+            self.devices.extend(roomEntities)
+            
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,

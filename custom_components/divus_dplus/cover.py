@@ -20,25 +20,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class DivusCoverEntity(CoverEntity, CoordinatorEntity):
 
-    def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
+    def __init__(self, coordinator: DivusCoordinator):
         super().__init__(coordinator)
-
         self.coordinator = coordinator
-        self.device = device
-        self._attr_unique_id = device.id
-        self._attr_name = device.json['NAME']
+
         self._attr_device_class = CoverDeviceClass.SHUTTER
         self._attr_supported_features = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP | CoverEntityFeature.OPEN_TILT | CoverEntityFeature.CLOSE_TILT
 
+class DivusDeviceCoverEntity(DivusCoverEntity):
+
+    def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
+        super().__init__(coordinator)
+
+        self._attr_unique_id = device.id
+        self._attr_name = device.json['NAME']
+
         shutterLongDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "25"), None)
-        self.shutterLongId = shutterLongDevice['ID'] if shutterLongDevice else None
-        self._attr_is_closed = shutterLongDevice['CURRENT_VALUE'] == "1"
+        self.shutterLongId: str = shutterLongDevice['ID'] if shutterLongDevice else None
+        self._attr_is_closed: bool = shutterLongDevice['CURRENT_VALUE'] == "1"
 
         shutterShortDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "27"), None)
-        self.shutterShortId = shutterShortDevice['ID'] if shutterShortDevice else None
-        _LOGGER.debug("Adding cover device: %s", self._attr_name)
-
+        self.shutterShortId: str = shutterShortDevice['ID'] if shutterShortDevice else None
+            
         self.updateDeviceIds = [self.shutterLongId, self.shutterShortId]
+        _LOGGER.debug("Adding cover device: %s", self._attr_name)
 
     async def async_open_cover(self):
         """Open the cover."""
@@ -62,5 +67,53 @@ class DivusCoverEntity(CoverEntity, CoordinatorEntity):
 
     async def updateState(self, state: DeviceStateDto):
         if(state.id == self.shutterLongId):
+            self._attr_is_closed = state.current_value == "1"
+
+
+class DivusRoomCoverEntity(CoverEntity, CoordinatorEntity):
+
+    def __init__(self, coordinator: DivusCoordinator,
+        deviceId: str,
+        name: str,
+        shutterLongIds: list[str],
+        shutterShortIds: list[str],
+        current_value: str):
+        super().__init__(coordinator)
+
+        self._attr_unique_id = deviceId
+        self._attr_name = name
+        self.shutterLongIds = shutterLongIds
+        self._attr_is_closed = current_value == "1"
+        self.shutterShortIds = shutterShortIds
+        self.updateDeviceIds = [self.shutterLongIds, self.shutterShortIds]
+        _LOGGER.debug("Adding room cover: %s", self._attr_name)
+
+    async def async_open_cover(self):
+        """Open the cover."""
+        for shutterId in self.shutterLongIds:
+            await self.coordinator.api.set_value(shutterId, "0")
+
+    async def async_close_cover(self):
+        """Close the cover."""
+        for shutterId in self.shutterLongIds:
+            await self.coordinator.api.set_value(shutterId, "1")
+
+    async def async_stop_cover(self):
+        """Stop the cover."""
+        for shutterId in self.shutterShortIds:
+            await self.coordinator.api.set_value(shutterId, "1")
+
+    async def async_open_cover_tilt(self):
+        """Tilt open the cover."""
+        for shutterId in self.shutterShortIds:
+            await self.coordinator.api.set_value(shutterId, "0")
+
+    async def async_close_cover_tilt(self):
+        """Tilt close the cover."""
+        for shutterId in self.shutterShortIds:
+            await self.coordinator.api.set_value(shutterId, "1")
+
+    async def updateState(self, state: DeviceStateDto):
+        if(state.id == self.shutterLongIds):
             self._attr_is_closed = state.current_value == "1"
         
