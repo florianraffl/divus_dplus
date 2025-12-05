@@ -85,7 +85,7 @@ class DivusRoomCoverEntity(CoverEntity, CoordinatorEntity):
         self.shutterLongIds = shutterLongIds
         self._attr_is_closed = current_value == "1"
         self.shutterShortIds = shutterShortIds
-        self.updateDeviceIds = [self.shutterLongIds, self.shutterShortIds]
+        self.updateDeviceIds = [*self.shutterLongIds, *self.shutterShortIds]
         _LOGGER.debug("Adding room cover: %s", self._attr_name)
 
     async def async_open_cover(self):
