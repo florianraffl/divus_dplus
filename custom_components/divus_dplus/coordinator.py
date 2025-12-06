@@ -44,7 +44,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         from custom_components.divus_dplus.switch import DivusSwitchEntity
         from custom_components.divus_dplus.light import DivusDimLightEntity, DivusSwitchLightEntity
         from custom_components.divus_dplus.cover import DivusDeviceCoverEntity, DivusRoomCoverEntity
-        from divus_dplus.climate import DivusClimateEntity
+        from custom_components.divus_dplus.climate import DivusClimateEntity
 
         api_devices = await self.api.get_devices()
 
