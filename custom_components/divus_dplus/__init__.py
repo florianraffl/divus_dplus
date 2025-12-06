@@ -16,7 +16,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
     api = DivusDplusApi(host, username, password, _LOGGER)
     
-    coordinator = DivusCoordinator(hass, api, entry, _LOGGER)
+    coordinator = DivusCoordinator(hass, api, entry)
     await coordinator.async_config_entry_first_refresh()
 
     _LOGGER.debug("Set up DIVUS D+ entry for host %s", host)
