@@ -39,8 +39,8 @@ class DivusClimateEntity(ClimateEntity, CoordinatorEntity):
 
     @property
     def supported_features(self) -> int:
-        return ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
-
+        return ClimateEntityFeature.TARGET_TEMPERATURE
+    
     @property
     def hvac_action(self):
         return HVACAction.OFF
