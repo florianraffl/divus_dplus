@@ -1,12 +1,12 @@
 import logging
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
+from custom_components.divus_dplus.const import DOMAIN
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from divus_dplus.const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
