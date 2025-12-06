@@ -31,7 +31,7 @@ class DivusLightEntity(LightEntity, CoordinatorEntity):
 
         self.coordinator = coordinator
         self.device = device
-        self._attr_unique_id = device.id
+        self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json['NAME']
         _LOGGER.debug("Adding light device: %s of type %s", self._attr_name, type(self))
 

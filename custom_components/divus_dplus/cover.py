@@ -32,7 +32,7 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto):
         super().__init__(coordinator)
 
-        self._attr_unique_id = device.id
+        self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json['NAME']
 
         shutterLongDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "25"), None)
@@ -80,7 +80,7 @@ class DivusRoomCoverEntity(DivusCoverEntity):
         current_value: str):
         super().__init__(coordinator)
 
-        self._attr_unique_id = deviceId
+        self._attr_unique_id = coordinator.entry.entry_id + "_" + deviceId
         self._attr_name = name
         self.shutterLongIds = shutterLongIds
         self._attr_is_closed = current_value == "1"

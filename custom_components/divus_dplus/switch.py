@@ -27,7 +27,7 @@ class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
 
         self.coordinator = coordinator
         self.device = device
-        self._attr_unique_id = device.id
+        self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json['NAME']
         self._is_on = device.json['CURRENT_VALUE'] == "1"
         _LOGGER.debug("Adding switch device: %s", self._attr_name)
