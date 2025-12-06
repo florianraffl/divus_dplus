@@ -12,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
 
-    _LOGGER.info("Setting up DIVUS D+ covers for entry %s", entry.entry_id)
+    _LOGGER.info("Setting up DIVUS D+ climates for entry %s", entry.entry_id)
 
     devices = hass.data[DOMAIN][entry.entry_id]["coordinator"].devices
     devices = [dev for dev in devices if isinstance(dev, DivusClimateEntity)]

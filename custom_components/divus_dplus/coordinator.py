@@ -45,6 +45,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         from custom_components.divus_dplus.light import DivusDimLightEntity, DivusSwitchLightEntity
         from custom_components.divus_dplus.cover import DivusDeviceCoverEntity, DivusRoomCoverEntity
         from custom_components.divus_dplus.climate import DivusClimateEntity
+        from custom_components.divus_dplus.sensor import DivusSensorEntity
 
         api_devices = await self.api.get_devices()
 
@@ -71,6 +72,7 @@ class DivusCoordinator(DataUpdateCoordinator):
                         roomEntities.append(DivusDeviceCoverEntity(self, device))
                     case ("CONTAINER", "climate"):
                         roomEntities.append(DivusClimateEntity(self, device))
+                        roomEntities.append(DivusSensorEntity(self, device))
 
             coverEntities: list[DivusDeviceCoverEntity] = list(filter(lambda d: isinstance(d, DivusDeviceCoverEntity), roomEntities))
             if(len(coverEntities) > 1):
