@@ -2,7 +2,7 @@ import logging
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
 from custom_components.divus_dplus.const import DOMAIN
-from homeassistant.components.climate import ClimateEntity
+from homeassistant.components.climate import ClimateEntity, HVACAction, HVACMode, UnitOfTemperature, ClimateEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -36,6 +36,38 @@ class DivusClimateEntity(ClimateEntity, CoordinatorEntity):
             
         self.updateDeviceIds = [self.currentTemperatureDeviceId, self.targetTemperatureDeviceId]
         _LOGGER.debug("Adding climate device: %s", self._attr_name)
+
+    @property
+    def supported_features(self) -> int:
+        return ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+
+    @property
+    def hvac_action(self):
+        return HVACAction.OFF
+    
+    @property
+    def hvac_mode(self):
+        return HVACMode.OFF
+    
+    @property
+    def hvac_modes(self):
+        return [HVACMode.HEAT, HVACMode.OFF]
+    
+    @property
+    def target_temperature_high(self):
+        return 30.0
+    
+    @property
+    def target_temperature_low(self):
+        return 15.0
+    
+    @property
+    def target_temperature_step(self):
+        return 0.1
+    
+    @property
+    def temperature_unit(self):
+        return UnitOfTemperature.CELSIUS
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
