@@ -37,7 +37,7 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
 
         shutterLongDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "25"), None)
         self.shutterLongId: str = shutterLongDevice['ID'] if shutterLongDevice else None
-        self._attr_is_closed: bool = shutterLongDevice['CURRENT_VALUE'] == "1"
+        self._attr_is_closed: bool | None = None
 
         shutterShortDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "27"), None)
         self.shutterShortId: str = shutterShortDevice['ID'] if shutterShortDevice else None
@@ -66,8 +66,8 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
         await self.coordinator.api.set_value(self.shutterShortId, "1")
 
     async def updateState(self, state: DeviceStateDto):
-        if(state.id == self.shutterLongId):
-            self._attr_is_closed = state.current_value == "1"
+        # Nothing to do here for now
+        pass
 
 
 class DivusRoomCoverEntity(DivusCoverEntity):
@@ -76,14 +76,13 @@ class DivusRoomCoverEntity(DivusCoverEntity):
         deviceId: str,
         name: str,
         shutterLongIds: list[str],
-        shutterShortIds: list[str],
-        current_value: str):
+        shutterShortIds: list[str]):
         super().__init__(coordinator)
 
         self._attr_unique_id = coordinator.entry.entry_id + "_" + deviceId
         self._attr_name = name
         self.shutterLongIds = shutterLongIds
-        self._attr_is_closed = current_value == "1"
+        self._attr_is_closed: bool | None = None
         self.shutterShortIds = shutterShortIds
         self.updateDeviceIds = [*self.shutterLongIds, *self.shutterShortIds]
         _LOGGER.debug("Adding room cover: %s", self._attr_name)
@@ -114,6 +113,6 @@ class DivusRoomCoverEntity(DivusCoverEntity):
             await self.coordinator.api.set_value(shutterId, "1")
 
     async def updateState(self, state: DeviceStateDto):
-        if(state.id == self.shutterLongIds):
-            self._attr_is_closed = state.current_value == "1"
+        # Nothing to do here for now
+        pass
         

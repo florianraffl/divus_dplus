@@ -79,8 +79,7 @@ class DivusCoordinator(DataUpdateCoordinator):
             if(len(coverEntities) > 1):
                 shutterLongIds = [dev.shutterLongId for dev in coverEntities if dev.shutterLongId]
                 shutterShortIds = [dev.shutterShortId for dev in coverEntities if dev.shutterShortId]
-                roomEntities.append(DivusRoomCoverEntity(self, devices[0].parentId, f'{roomName} Alle', shutterLongIds, shutterShortIds, 
-                    "1" if all(dev._attr_is_closed for dev in coverEntities) else "0"))
+                roomEntities.append(DivusRoomCoverEntity(self, devices[0].parentId, f'{roomName} Alle', shutterLongIds, shutterShortIds))
             self.devices.extend(roomEntities)
             
 
