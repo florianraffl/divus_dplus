@@ -74,9 +74,13 @@ class DivusClimateEntity(ClimateEntity, CoordinatorEntity):
         temperature = kwargs.get("temperature")
         if temperature is not None:
             await self.coordinator.api.set_value(self.targetTemperatureDeviceId, str(int(temperature)))
+            _LOGGER.debug("Set target temperature of %s to %s", self._attr_name, temperature)
 
     async def updateState(self, state: DeviceStateDto):
-        if(state.id == self.currentTemperatureDeviceId):
-            self._attr_current_temperature = float(state.current_value)
-        elif(state.id == self.targetTemperatureDeviceId):
-            self._attr_target_temperature = float(state.current_value)
+        float_current_value = float(state.current_value)
+        if(state.id == self.currentTemperatureDeviceId and float_current_value != self._attr_current_temperature):
+            self._attr_current_temperature = float_current_value
+            _LOGGER.debug("Updated current temperature of %s to %s", self._attr_name, float_current_value)
+        elif(state.id == self.targetTemperatureDeviceId and float_current_value != self._attr_target_temperature):
+            self._attr_target_temperature = float_current_value
+            _LOGGER.debug("Updated target temperature of %s to %s", self._attr_name, float_current_value)

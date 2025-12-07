@@ -48,23 +48,27 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
     async def async_open_cover(self):
         """Open the cover."""
         await self.coordinator.api.set_value(self.shutterLongId, "0")
+        _LOGGER.debug("Opened cover device: %s", self._attr_name)
 
     async def async_close_cover(self):
         """Close the cover."""
         await self.coordinator.api.set_value(self.shutterLongId, "1")
-
+        _LOGGER.debug("Closed cover device: %s", self._attr_name)
     async def async_stop_cover(self):
         """Stop the cover."""
         await self.coordinator.api.set_value(self.shutterShortId, "1")
+        _LOGGER.debug("Stopped cover device: %s", self._attr_name)
 
     async def async_open_cover_tilt(self):
         """Tilt open the cover."""
         await self.coordinator.api.set_value(self.shutterShortId, "0")
+        _LOGGER.debug("Tilt opened cover device: %s", self._attr_name)
 
     async def async_close_cover_tilt(self):
         """Tilt close the cover."""
         await self.coordinator.api.set_value(self.shutterShortId, "1")
-
+        _LOGGER.debug("Tilt closed cover device: %s", self._attr_name)
+        
     async def updateState(self, state: DeviceStateDto):
         # Nothing to do here for now
         pass
@@ -91,26 +95,31 @@ class DivusRoomCoverEntity(DivusCoverEntity):
         """Open the cover."""
         for shutterId in self.shutterLongIds:
             await self.coordinator.api.set_value(shutterId, "0")
+        _LOGGER.debug("Opened room cover: %s", self._attr_name)
 
     async def async_close_cover(self):
         """Close the cover."""
         for shutterId in self.shutterLongIds:
             await self.coordinator.api.set_value(shutterId, "1")
+        _LOGGER.debug("Closed room cover: %s", self._attr_name)
 
     async def async_stop_cover(self):
         """Stop the cover."""
         for shutterId in self.shutterShortIds:
             await self.coordinator.api.set_value(shutterId, "1")
+        _LOGGER.debug("Stopped room cover: %s", self._attr_name)
 
     async def async_open_cover_tilt(self):
         """Tilt open the cover."""
         for shutterId in self.shutterShortIds:
             await self.coordinator.api.set_value(shutterId, "0")
+        _LOGGER.debug("Tilt opened room cover: %s", self._attr_name)
 
     async def async_close_cover_tilt(self):
         """Tilt close the cover."""
         for shutterId in self.shutterShortIds:
             await self.coordinator.api.set_value(shutterId, "1")
+        _LOGGER.debug("Tilt closed room cover: %s", self._attr_name)
 
     async def updateState(self, state: DeviceStateDto):
         # Nothing to do here for now
