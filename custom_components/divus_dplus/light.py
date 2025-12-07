@@ -41,8 +41,10 @@ class DivusLightEntity(LightEntity, CoordinatorEntity):
 
     async def async_turn_on(self):
         await self.coordinator.api.set_value(self.device.id, "1")
+        _LOGGER.debug("Turned on light device: %s", self._attr_name)
     async def async_turn_off(self):
         await self.coordinator.api.set_value(self.device.id, "0")
+        _LOGGER.debug("Turned off light device: %s", self._attr_name)
 
 class TypeEnum(Enum):
     DIMABLE = "dimable"
@@ -77,17 +79,17 @@ class DivusDimLightEntity(DivusLightEntity):
     @property
     def brightness(self) -> Optional[int]:
         """Return the current brightness."""
-        _LOGGER.debug("Getting brightness for light %s with dimValue %s", self._attr_name, self.dimValue)
         return value_to_brightness((1, 100), int(self.dimValue))
 
     async def async_turn_on(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "1")
-        _LOGGER.debug("Turning on light %s with brightness %s", self._attr_name, kwargs)
         value_in_range = math.ceil(brightness_to_value((1, 100), kwargs['brightness']))
-        _LOGGER.debug("Setting dim value for light %s to %s", self._attr_name, value_in_range)
         await self.coordinator.api.set_value(self.dimDeviceId, str(value_in_range))
+        _LOGGER.debug("Turon on and set brightness of %s to %s", self._attr_name, kwargs['brightness'])
+
     async def async_turn_off(self, **kwargs):
         await self.coordinator.api.set_value(self.switchDeviceId, "0")
+        _LOGGER.debug("Turned off light device: %s", self._attr_name)
 
 class DivusSwitchLightEntity(DivusLightEntity):
 
@@ -103,4 +105,8 @@ class DivusSwitchLightEntity(DivusLightEntity):
         self.updateDeviceIds = [self._attr_unique_id]
     
     async def updateState(self, state: DeviceStateDto):
-        self._is_on = state.current_value == "1"
+
+        new_is_on = state.current_value == "1"
+        if (state.id == self.device.id and new_is_on != self._is_on):
+            self._is_on = new_is_on
+            _LOGGER.debug("Updated state of %s to is_on=%s", self._attr_name, self._is_on)
