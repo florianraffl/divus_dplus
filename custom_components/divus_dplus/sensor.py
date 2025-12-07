@@ -26,10 +26,11 @@ class DivusSensorEntity(SensorEntity, CoordinatorEntity):
         self._attr_name = device.json['NAME']
 
         currentTemperatureDevice = next((dev for dev in device.subElements if dev['RENDERING_ID'] == "34"), None)
-        self._attr_unique_id = coordinator.entry.entry_id + "_" + currentTemperatureDevice['ID'] if currentTemperatureDevice else None
+        self.currentTemperatureDeviceId: str = currentTemperatureDevice['ID'] if currentTemperatureDevice else None
+        self._attr_unique_id = coordinator.entry.entry_id + "_" + self.currentTemperatureDeviceId
         self._attr_native_value: float = float(currentTemperatureDevice['CURRENT_VALUE']) if currentTemperatureDevice else None
   
-        self.updateDeviceIds = [self._attr_unique_id]
+        self.updateDeviceIds = [self.currentTemperatureDeviceId]
         _LOGGER.debug("Adding sensor device: %s", self._attr_name)
     
     @property
@@ -49,5 +50,5 @@ class DivusSensorEntity(SensorEntity, CoordinatorEntity):
         return 2
 
     async def updateState(self, state: DeviceStateDto):
-        if(state.id == self._attr_unique_id):
+        if(state.id == self.currentTemperatureDeviceId):
             self._attr_native_value = float(state.current_value)

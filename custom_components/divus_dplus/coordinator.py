@@ -25,7 +25,6 @@ class DivusCoordinator(DataUpdateCoordinator):
         self.devices: list[Entity]
 
     async def _async_update_data(self):
-        _LOGGER.debug("Updating DIVUS D+ data for entry %s", self.entry.entry_id)
 
         device_ids = [dev.updateDeviceIds for dev in self.devices]
         device_ids = [
