@@ -102,7 +102,7 @@ class DivusSwitchLightEntity(DivusLightEntity):
         self.type = TypeEnum.SWITCH
         self._is_on = device.json['CURRENT_VALUE'] == "1"
 
-        self.updateDeviceIds = [self._attr_unique_id]
+        self.updateDeviceIds = [device.id]
     
     async def updateState(self, state: DeviceStateDto):
 

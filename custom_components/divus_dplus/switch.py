@@ -32,7 +32,7 @@ class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
         self._is_on = device.json['CURRENT_VALUE'] == "1"
         _LOGGER.debug("Adding switch device: %s", self._attr_name)
 
-        self.updateDeviceIds = [self._attr_unique_id]
+        self.updateDeviceIds = [device.id]
 
     @property
     def is_on(self):
@@ -44,4 +44,7 @@ class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
         await self.coordinator.api.set_value(self.device.id, "0")
     
     async def updateState(self, state: DeviceStateDto):
-        self._is_on = state.current_value == "1"
+        new_is_on = state.current_value == "1"
+        if (state.id == self.device.id and new_is_on != self._is_on):
+            self._is_on = new_is_on
+            _LOGGER.debug("Updated state of %s to is_on=%s", self._attr_name, self._is_on)
