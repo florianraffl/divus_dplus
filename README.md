@@ -9,7 +9,7 @@ Home Assistant integration for DIVUS D+ KNX systems, enabling control and monito
 > **Warning**  
 > This integration is not affiliated with DIVUS GmbH. The developers take no responsibility for anything that happens to your devices because of this integration.
 
-![DIVUS D+ KNX](custom_components/divus_dplus/icon.png)
+![DIVUS D+ KNX](icon.png)
 
 ## Features
 
