@@ -5,3 +5,6 @@ set -e
 cd "$(dirname "$0")/.."
 
 python3 -m pip install --requirement requirements.txt
+
+# Python 3.13 compatibility fix: Upgrade aiodns and pycares to versions compatible with Python 3.13
+python3 -m pip install --force-reinstall aiodns pycares

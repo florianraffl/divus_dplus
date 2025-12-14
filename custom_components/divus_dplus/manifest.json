@@ -1,11 +1,13 @@
 {
   "domain": "divus_dplus",
   "name": "DIVUS D+ KNX",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "documentation": "https://github.com/florianraffl/divus_dplus",
   "issue_tracker": "https://github.com/florianraffl/divus_dplus/issues",
   "requirements": [],
   "config_flow": true,
-  "codeowners": ["@florianraffl"],
+  "codeowners": [
+    "@florianraffl"
+  ],
   "iot_class": "local_polling"
 }

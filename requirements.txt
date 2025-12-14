@@ -1,4 +1,6 @@
-aiohttp>=3.9.0
+# Python 3.13 compatibility fix: After installing requirements, run:
+# pip install --force-reinstall aiodns pycares
+# This upgrades aiodns to 3.6.1+ and pycares to 4.11.0+ to fix AttributeError with pycares.ares_query_a_result
 homeassistant>=2025.11.0
 colorlog==6.10.1
 pip>=21.3.1

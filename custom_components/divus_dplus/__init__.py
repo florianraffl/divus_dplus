@@ -1,21 +1,22 @@
+import logging
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from custom_components.divus_dplus.const import DOMAIN, PLATFORMS
 from custom_components.divus_dplus.api import DivusDplusApi
+from custom_components.divus_dplus.const import DOMAIN, PLATFORMS
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 
-import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     host = entry.data["host"]
-    username = entry.data.get("username")
-    password = entry.data.get("password")
+    username: str = entry.data.get("username", "")
+    password: str = entry.data.get("password", "")
 
-    api = DivusDplusApi(host, username, password, _LOGGER)
-    
+    api = DivusDplusApi(host, username, password)
+
     coordinator = DivusCoordinator(hass, api, entry)
     await coordinator.async_config_entry_first_refresh()
 
@@ -26,9 +27,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     return True
 
 
-async def async_unload_entry(hass, entry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload:
         hass.data[DOMAIN].pop(entry.entry_id)
     return unload
-
