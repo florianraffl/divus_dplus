@@ -1,12 +1,20 @@
 class DeviceDto:
-    def __init__(self, id: str, parentId: str, parentName: str, json: dict, subElements: list):
-        self.id = id
-        self.parentId = parentId
-        self.parentName = parentName
+    def __init__(
+        self,
+        device_id: str,
+        parent_id: str,
+        parent_name: str,
+        json: dict,
+        sub_elements: list,
+    ) -> None:
+        self.id = device_id
+        self.parentId = parent_id
+        self.parentName = parent_name
         self.json = json
-        self.subElements = subElements
+        self.sub_elements = sub_elements
+
 
 class DeviceStateDto:
-    def __init__(self, id: str, current_value: str):
-        self.id = id
+    def __init__(self, device_id: str, current_value: str) -> None:
+        self.id = device_id
         self.current_value = current_value
