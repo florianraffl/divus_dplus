@@ -1,0 +1,54 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Home Assistant",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/vscode/.local/bin/hass",
+            "args": [
+                "--config",
+                "${workspaceFolder}/config",
+                "--debug"
+            ],
+            "console": "internalConsole",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/custom_components"
+            },
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            },
+            "serverReadyAction": {
+                "pattern": "Home Assistant initialized",
+                "uriFormat": "http://localhost:8123",
+                "action": "openExternally"
+            }
+        },
+        {
+            "name": "Home Assistant (Log to Terminal)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/home/vscode/.local/bin/hass",
+            "args": [
+                "--config",
+                "${workspaceFolder}/config",
+                "--debug"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/custom_components"
+            },
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "serverReadyAction": {
+                "pattern": "Home Assistant initialized",
+                "uriFormat": "http://localhost:8123",
+                "action": "openExternally"
+            }
+        }
+    ]
+}
