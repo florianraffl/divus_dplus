@@ -34,6 +34,7 @@ class DivusCoverEntity(CoverEntity, CoordinatorEntity):
         super().__init__(coordinator)
         self.coordinator = coordinator
 
+        self._attr_assumed_state = True
         self._attr_device_class = CoverDeviceClass.SHUTTER
         self._attr_supported_features = (
             CoverEntityFeature.OPEN
@@ -57,7 +58,9 @@ class DivusDeviceCoverEntity(DivusCoverEntity, DivusEntity):
         self.shutter_long_id: str = (
             shutter_long_device["ID"] if shutter_long_device else ""
         )
-        self._attr_is_closed: bool | None = None
+        self._attr_is_closed: bool | None = (
+            shutter_long_device["CURRENT_VALUE"] == "1" if shutter_long_device else None
+        )
 
         shutter_short_device = next(
             (dev for dev in device.sub_elements if dev["RENDERING_ID"] == "27"), None
@@ -95,8 +98,8 @@ class DivusDeviceCoverEntity(DivusCoverEntity, DivusEntity):
         _LOGGER.debug("Tilt closed cover device: %s", self._attr_name)
 
     def update_state(self, state: DeviceStateDto) -> None:
-        # Nothing to do here for now
-        pass
+        if state.id == self.shutter_long_id:
+            self._attr_is_closed = state.current_value == "1"
 
 
 class DivusRoomCoverEntity(DivusCoverEntity):
