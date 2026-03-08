@@ -17,8 +17,9 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         schema = vol.Schema(
             {
                 vol.Required("host"): str,
-                vol.Optional("username"): str,
-                vol.Optional("password"): str,
+                vol.Required("username"): str,
+                vol.Required("password"): str,
+                vol.Required("use_room_covers", default=True): bool,
             }
         )
 

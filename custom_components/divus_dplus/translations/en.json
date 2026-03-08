@@ -1,0 +1,15 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Password",
+                    "username": "User name",
+                    "host": "Divus server host",
+                    "use_room_covers": "Add room covers when multiple covers are available"
+                },
+                "title": "Login Information"
+            }
+        }
+    }
+}

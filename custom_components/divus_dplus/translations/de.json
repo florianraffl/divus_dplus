@@ -1,0 +1,15 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Passwort",
+                    "username": "Benutzername",
+                    "host": "Divus Server Host",
+                    "use_room_covers": "Füge Raumjalousien hinzu, wenn mehrere Jalousien verfügbar sind"
+                },
+                "title": "Anmeldeinformationen"
+            }
+        }
+    }
+}
