@@ -91,6 +91,7 @@ class DivusDimLightEntity(DivusLightEntity):
             if current_switch_value_device
             else False
         )
+        self._attr_color_mode = ColorMode.BRIGHTNESS
 
         self.update_device_ids = {self.dim_device_id, self.switch_device_id}
         _LOGGER.debug(
@@ -163,6 +164,7 @@ class DivusSwitchLightEntity(DivusLightEntity):
         self._is_on = device.json["CURRENT_VALUE"] == "1"
 
         self.update_device_ids = {device.id}
+        self._attr_color_mode = ColorMode.ONOFF
 
     def update_state(self, state: DeviceStateDto) -> None:
         new_is_on = state.current_value == "1"

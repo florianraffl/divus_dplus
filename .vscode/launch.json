@@ -5,7 +5,7 @@
             "name": "Home Assistant",
             "type": "debugpy",
             "request": "launch",
-            "program": "/home/vscode/.local/bin/hass",
+            "program": "/usr/local/python/3.14.3/bin/hass",
             "args": [
                 "--config",
                 "${workspaceFolder}/config",
@@ -31,7 +31,7 @@
             "name": "Home Assistant (Log to Terminal)",
             "type": "debugpy",
             "request": "launch",
-            "program": "/home/vscode/.local/bin/hass",
+            "program": "/usr/local/python/3.14.3/bin/hass",
             "args": [
                 "--config",
                 "${workspaceFolder}/config",
