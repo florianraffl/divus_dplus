@@ -3,6 +3,7 @@ import logging
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -34,6 +35,11 @@ class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
         self.device = device
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, device.id)},
+            name=device.json["NAME"],
+            manufacturer="DIVUS",
+        )
         self._is_on = device.json["CURRENT_VALUE"] == "1"
         _LOGGER.debug("Adding switch device: %s", self._attr_name)
 
