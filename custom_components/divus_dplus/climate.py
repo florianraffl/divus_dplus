@@ -39,6 +39,7 @@ class DivusClimateEntity(ClimateEntity, CoordinatorEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
 

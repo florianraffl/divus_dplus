@@ -7,6 +7,7 @@ from homeassistant.components.cover import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -49,6 +50,7 @@ class DivusDeviceCoverEntity(DivusCoverEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
 
@@ -115,6 +117,11 @@ class DivusRoomCoverEntity(DivusCoverEntity):
 
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device_id
         self._attr_name = name
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, device_id)},
+            name=name,
+            manufacturer="DIVUS",
+        )
         self.shutter_long_ids = shutter_long_ids
         self._attr_is_closed: bool | None = None
         self.shutter_short_ids = shutter_short_ids

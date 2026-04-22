@@ -8,6 +8,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
+from custom_components.divus_dplus.entity import DivusEntity
 
 from .const import DOMAIN
 
@@ -24,14 +25,14 @@ async def async_setup_entry(
     async_add_entities(devices)
 
 
-class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
+class DivusSwitchEntity(SwitchEntity, CoordinatorEntity, DivusEntity):
     _is_on: bool = False
 
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self.coordinator = coordinator
-        self.device = device
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
         self._is_on = device.json["CURRENT_VALUE"] == "1"

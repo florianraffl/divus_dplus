@@ -32,6 +32,7 @@ class DivusSensorEntity(SensorEntity, CoordinatorEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self._attr_name = device.json["NAME"]
 
         current_temperature_device = next(
