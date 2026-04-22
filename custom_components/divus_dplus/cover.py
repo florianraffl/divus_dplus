@@ -104,6 +104,53 @@ class DivusDeviceCoverEntity(DivusCoverEntity, DivusEntity):
             self._attr_is_closed = state.current_value == "1"
 
 
+class DivusGlobalCoverEntity(DivusCoverEntity):
+    def __init__(
+        self,
+        coordinator: DivusCoordinator,
+        entry_id: str,
+        shutter_long_ids: list[str],
+        shutter_short_ids: list[str],
+    ) -> None:
+        super().__init__(coordinator)
+
+        self._attr_unique_id = entry_id + "_global_cover"
+        self._attr_name = "Alle Jalousien"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry_id + "_global_cover")},
+            name="Alle Jalousien",
+            manufacturer="DIVUS",
+        )
+        self._attr_supported_features = (
+            CoverEntityFeature.OPEN
+            | CoverEntityFeature.CLOSE
+            | CoverEntityFeature.STOP
+        )
+        self.shutter_long_ids = shutter_long_ids
+        self.shutter_short_ids = shutter_short_ids
+        self._attr_is_closed: bool | None = None
+        self.update_device_ids = []
+        _LOGGER.debug("Adding global cover entity")
+
+    async def async_open_cover(self) -> None:
+        for shutter_id in self.shutter_long_ids:
+            await self.coordinator.api.set_value(shutter_id, "0")
+        _LOGGER.debug("Opened global cover")
+
+    async def async_close_cover(self) -> None:
+        for shutter_id in self.shutter_long_ids:
+            await self.coordinator.api.set_value(shutter_id, "1")
+        _LOGGER.debug("Closed global cover")
+
+    async def async_stop_cover(self) -> None:
+        for shutter_id in self.shutter_short_ids:
+            await self.coordinator.api.set_value(shutter_id, "1")
+        _LOGGER.debug("Stopped global cover")
+
+    def update_state(self, state: DeviceStateDto) -> None:
+        pass
+
+
 class DivusRoomCoverEntity(DivusCoverEntity):
     def __init__(
         self,

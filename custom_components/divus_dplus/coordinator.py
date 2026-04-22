@@ -50,6 +50,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         )
         from custom_components.divus_dplus.cover import (  # noqa: PLC0415
             DivusDeviceCoverEntity,
+            DivusGlobalCoverEntity,
             DivusRoomCoverEntity,
         )
         from custom_components.divus_dplus.light import (  # noqa: PLC0415
@@ -114,6 +115,27 @@ class DivusCoordinator(DataUpdateCoordinator):
                     )
                 )
             self.devices.extend(room_entities)
+
+        all_cover_entities: list[DivusDeviceCoverEntity] = [
+            dev for dev in self.devices if isinstance(dev, DivusDeviceCoverEntity)
+        ]
+        if all_cover_entities:
+            shutter_long_ids = [
+                dev.shutter_long_id for dev in all_cover_entities if dev.shutter_long_id
+            ]
+            shutter_short_ids = [
+                dev.shutter_short_id
+                for dev in all_cover_entities
+                if dev.shutter_short_id
+            ]
+            self.devices.append(
+                DivusGlobalCoverEntity(
+                    self,
+                    self.entry.entry_id,
+                    shutter_long_ids,
+                    shutter_short_ids,
+                )
+            )
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
