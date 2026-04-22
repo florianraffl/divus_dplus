@@ -7,7 +7,6 @@ from homeassistant.components.light import LightEntity
 from homeassistant.components.light.const import ColorMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.color import brightness_to_value, value_to_brightness
@@ -37,15 +36,10 @@ class DivusLightEntity(LightEntity, CoordinatorEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self.coordinator = coordinator
-        self.device = device
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, device.id)},
-            name=device.json["NAME"],
-            manufacturer="DIVUS",
-        )
         _LOGGER.debug("Adding light device: %s of type %s", self._attr_name, type(self))
 
     @property

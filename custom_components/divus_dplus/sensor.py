@@ -7,7 +7,6 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -33,12 +32,8 @@ class DivusSensorEntity(SensorEntity, CoordinatorEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self._attr_name = device.json["NAME"]
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, device.id)},
-            name=device.json["NAME"],
-            manufacturer="DIVUS",
-        )
 
         current_temperature_device = next(
             (dev for dev in device.sub_elements if dev["RENDERING_ID"] == "34"), None

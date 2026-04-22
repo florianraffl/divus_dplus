@@ -4,7 +4,6 @@ from typing import Any
 from homeassistant.components.climate import (
     ClimateEntity,
 )
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.components.climate.const import (
     ClimateEntityFeature,
     HVACAction,
@@ -40,13 +39,9 @@ class DivusClimateEntity(ClimateEntity, CoordinatorEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, device.id)},
-            name=device.json["NAME"],
-            manufacturer="DIVUS",
-        )
 
         current_temperature_device = next(
             (dev for dev in device.sub_elements if dev["RENDERING_ID"] == "34"), None
