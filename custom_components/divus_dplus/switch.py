@@ -3,12 +3,12 @@ import logging
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from custom_components.divus_dplus.coordinator import DivusCoordinator
 from custom_components.divus_dplus.dtos import DeviceDto, DeviceStateDto
+from custom_components.divus_dplus.entity import DivusEntity
 
 from .const import DOMAIN
 
@@ -25,21 +25,16 @@ async def async_setup_entry(
     async_add_entities(devices)
 
 
-class DivusSwitchEntity(SwitchEntity, CoordinatorEntity):
+class DivusSwitchEntity(SwitchEntity, CoordinatorEntity, DivusEntity):
     _is_on: bool = False
 
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
+        DivusEntity.__init__(self, device)
         self.coordinator = coordinator
-        self.device = device
         self._attr_unique_id = coordinator.entry.entry_id + "_" + device.id
         self._attr_name = device.json["NAME"]
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, device.id)},
-            name=device.json["NAME"],
-            manufacturer="DIVUS",
-        )
         self._is_on = device.json["CURRENT_VALUE"] == "1"
         _LOGGER.debug("Adding switch device: %s", self._attr_name)
 
