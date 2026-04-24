@@ -1,6 +1,10 @@
+from collections.abc import Mapping
+from typing import Any
+
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.data_entry_flow import FlowResult
+from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.core import callback
 
 from custom_components.divus_dplus.const import (
     CONF_ADD_GLOBAL_COVER,
@@ -9,7 +13,7 @@ from custom_components.divus_dplus.const import (
 )
 
 
-def _covers_schema(defaults: dict) -> vol.Schema:
+def _covers_schema(defaults: Mapping[str, Any]) -> vol.Schema:
     return vol.Schema(
         {
             vol.Required(
@@ -32,7 +36,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         errors = {}
 
         if user_input is not None:
@@ -50,7 +54,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_covers(
         self, user_input: dict | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(
                 title="DIVUS D+",
@@ -64,7 +68,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     @staticmethod
-    @config_entries.callback
+    @callback
     def async_get_options_flow(
         config_entry: config_entries.ConfigEntry,
     ) -> config_entries.OptionsFlow:
@@ -74,9 +78,9 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class DivusOptionsFlow(config_entries.OptionsFlow):
     async def async_step_init(
         self, user_input: dict | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            return self.async_create_entry(data=user_input)
 
         return self.async_show_form(
             step_id="init",
