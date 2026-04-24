@@ -72,9 +72,6 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class DivusOptionsFlow(config_entries.OptionsFlow):
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
-
     async def async_step_init(
         self, user_input: dict | None = None
     ) -> FlowResult:
