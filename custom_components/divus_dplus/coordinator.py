@@ -1,7 +1,6 @@
 import logging
 from datetime import timedelta
 from itertools import groupby
-import select
 from typing import TYPE_CHECKING, cast
 
 from homeassistant.config_entries import ConfigEntry
