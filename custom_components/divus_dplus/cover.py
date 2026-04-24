@@ -30,7 +30,7 @@ async def async_setup_entry(
     async_add_entities(devices)
 
 
-class DivusCoverEntity(CoverEntity, CoordinatorEntity):
+class DivusCoverEntity(CoverEntity, CoordinatorEntity, DivusEntity):
     def __init__(self, coordinator: DivusCoordinator) -> None:
         super().__init__(coordinator)
         self.coordinator = coordinator
@@ -46,7 +46,7 @@ class DivusCoverEntity(CoverEntity, CoordinatorEntity):
         )
 
 
-class DivusDeviceCoverEntity(DivusCoverEntity, DivusEntity):
+class DivusDeviceCoverEntity(DivusCoverEntity):
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator)
 
@@ -122,14 +122,12 @@ class DivusGlobalCoverEntity(DivusCoverEntity):
             manufacturer="DIVUS",
         )
         self._attr_supported_features = (
-            CoverEntityFeature.OPEN
-            | CoverEntityFeature.CLOSE
-            | CoverEntityFeature.STOP
+            CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP
         )
         self.shutter_long_ids = shutter_long_ids
         self.shutter_short_ids = shutter_short_ids
         self._attr_is_closed: bool | None = None
-        self.update_device_ids = []
+        self.update_device_ids = set()
         _LOGGER.debug("Adding global cover entity")
 
     async def async_open_cover(self) -> None:
@@ -172,7 +170,7 @@ class DivusRoomCoverEntity(DivusCoverEntity):
         self.shutter_long_ids = shutter_long_ids
         self._attr_is_closed: bool | None = None
         self.shutter_short_ids = shutter_short_ids
-        self.update_device_ids = [*self.shutter_long_ids, *self.shutter_short_ids]
+        self.update_device_ids = set(self.shutter_long_ids + self.shutter_short_ids)
         _LOGGER.debug("Adding room cover: %s", self._attr_name)
 
     async def async_open_cover(self) -> None:
