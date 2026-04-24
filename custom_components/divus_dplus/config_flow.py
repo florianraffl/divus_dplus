@@ -68,7 +68,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(
         config_entry: config_entries.ConfigEntry,
     ) -> config_entries.OptionsFlow:
-        return DivusOptionsFlow(config_entry)
+        return DivusOptionsFlow()
 
 
 class DivusOptionsFlow(config_entries.OptionsFlow):
