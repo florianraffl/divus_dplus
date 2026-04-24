@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta
 from itertools import groupby
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -50,6 +50,7 @@ class DivusCoordinator(DataUpdateCoordinator):
         )
         from custom_components.divus_dplus.cover import (  # noqa: PLC0415
             DivusDeviceCoverEntity,
+            DivusGlobalCoverEntity,
             DivusRoomCoverEntity,
         )
         from custom_components.divus_dplus.light import (  # noqa: PLC0415
@@ -70,7 +71,7 @@ class DivusCoordinator(DataUpdateCoordinator):
             devices = list(devices_list)
             _LOGGER.info("Room '%s' has %d devices.", room_name, len(devices))
 
-            room_entities = []
+            room_entities: set[DivusEntity] = set()
             for device in devices:
                 optional_p = device.json["OPTIONALP"].split("|")
                 category = next(
@@ -81,20 +82,22 @@ class DivusCoordinator(DataUpdateCoordinator):
 
                 match (device.json["TYPE"], category):
                     case ("EIBOBJECT", "lighting"):
-                        room_entities.append(DivusSwitchLightEntity(self, device))
+                        room_entities.add(DivusSwitchLightEntity(self, device))
                     case ("CONTAINER", "lighting"):
-                        room_entities.append(DivusDimLightEntity(self, device))
+                        room_entities.add(DivusDimLightEntity(self, device))
                     case ("EIBOBJECT", _):
-                        room_entities.append(DivusSwitchEntity(self, device))
+                        room_entities.add(DivusSwitchEntity(self, device))
                     case ("CONTAINER", "shutters"):
-                        room_entities.append(DivusDeviceCoverEntity(self, device))
+                        room_entities.add(DivusDeviceCoverEntity(self, device))
                     case ("CONTAINER", "climate"):
-                        room_entities.append(DivusClimateEntity(self, device))
-                        room_entities.append(DivusSensorEntity(self, device))
+                        room_entities.add(DivusClimateEntity(self, device))
+                        room_entities.add(DivusSensorEntity(self, device))
 
-            cover_entities: list[DivusDeviceCoverEntity] = list(
-                filter(lambda d: isinstance(d, DivusDeviceCoverEntity), room_entities)
-            )
+            cover_entities: list[DivusDeviceCoverEntity] = [
+                cast("DivusDeviceCoverEntity", dev)
+                for dev in room_entities
+                if isinstance(dev, DivusDeviceCoverEntity)
+            ]
             if len(cover_entities) > 1:
                 shutter_long_ids = [
                     dev.shutter_long_id for dev in cover_entities if dev.shutter_long_id
@@ -104,7 +107,7 @@ class DivusCoordinator(DataUpdateCoordinator):
                     for dev in cover_entities
                     if dev.shutter_short_id
                 ]
-                room_entities.append(
+                room_entities.add(
                     DivusRoomCoverEntity(
                         self,
                         devices[0].parentId,
@@ -114,6 +117,27 @@ class DivusCoordinator(DataUpdateCoordinator):
                     )
                 )
             self.devices.extend(room_entities)
+
+        all_cover_entities: list[DivusDeviceCoverEntity] = [
+            dev for dev in self.devices if isinstance(dev, DivusDeviceCoverEntity)
+        ]
+        if all_cover_entities:
+            shutter_long_ids = [
+                dev.shutter_long_id for dev in all_cover_entities if dev.shutter_long_id
+            ]
+            shutter_short_ids = [
+                dev.shutter_short_id
+                for dev in all_cover_entities
+                if dev.shutter_short_id
+            ]
+            self.devices.append(
+                DivusGlobalCoverEntity(
+                    self,
+                    self.entry.entry_id,
+                    shutter_long_ids,
+                    shutter_short_ids,
+                )
+            )
 
         self.hass.data.setdefault(DOMAIN, {})[self.entry.entry_id] = {
             "api": self.api,
