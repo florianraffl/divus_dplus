@@ -36,6 +36,7 @@ class DivusCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> None:
         device_ids = [dev.update_device_ids for dev in self.devices]
         device_ids = [x for xs in device_ids for x in xs]
+        device_ids = [x for x in device_ids if x != ""]
         states = await self.api.get_states(device_ids)
 
         for state in states:
@@ -54,6 +55,7 @@ class DivusCoordinator(DataUpdateCoordinator):
             DivusRoomCoverEntity,
         )
         from custom_components.divus_dplus.light import (  # noqa: PLC0415
+            DivusColorTempLightEntity,
             DivusDimLightEntity,
             DivusSwitchLightEntity,
         )
@@ -84,7 +86,16 @@ class DivusCoordinator(DataUpdateCoordinator):
                     case ("EIBOBJECT", "lighting"):
                         room_entities.add(DivusSwitchLightEntity(self, device))
                     case ("CONTAINER", "lighting"):
-                        room_entities.add(DivusDimLightEntity(self, device))
+                        if device.sub_elements and any(
+                            sub_dev["RENDERING_ID"] == "418"
+                            for sub_dev in device.sub_elements
+                        ):
+                            room_entities.add(DivusColorTempLightEntity(self, device))
+                        elif device.sub_elements and any(
+                            sub_dev["RENDERING_ID"] == "11"
+                            for sub_dev in device.sub_elements
+                        ):
+                            room_entities.add(DivusDimLightEntity(self, device))
                     case ("EIBOBJECT", _):
                         room_entities.add(DivusSwitchEntity(self, device))
                     case ("CONTAINER", "shutters"):
@@ -92,6 +103,13 @@ class DivusCoordinator(DataUpdateCoordinator):
                     case ("CONTAINER", "climate"):
                         room_entities.add(DivusClimateEntity(self, device))
                         room_entities.add(DivusSensorEntity(self, device))
+                    case _:
+                        _LOGGER.debug(
+                            "Device '%s' of type '%s' with category '%s' is not supported.",
+                            device.json["NAME"],
+                            device.json["TYPE"],
+                            category,
+                        )
 
             cover_entities: list[DivusDeviceCoverEntity] = [
                 cast("DivusDeviceCoverEntity", dev)

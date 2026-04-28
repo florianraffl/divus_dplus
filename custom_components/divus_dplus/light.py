@@ -58,6 +58,7 @@ class DivusLightEntity(LightEntity, CoordinatorEntity, DivusEntity):
 class TypeEnum(Enum):
     DIMABLE = "dimable"
     SWITCH = "switch"
+    COLOR_TEMP = "dim_color"
 
 
 class DivusDimLightEntity(DivusLightEntity):
@@ -67,6 +68,7 @@ class DivusDimLightEntity(DivusLightEntity):
 
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator, device)
+        self._attr_unique_id = f"{self._attr_unique_id}_dim"
         self.type = TypeEnum.DIMABLE
         current_dim_value_device = next(
             (dev for dev in device.sub_elements if dev["RENDERING_ID"] == "11"), None
@@ -160,6 +162,7 @@ class DivusSwitchLightEntity(DivusLightEntity):
 
     def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
         super().__init__(coordinator, device)
+        self._attr_unique_id = f"{self._attr_unique_id}_switch"
         self.type = TypeEnum.SWITCH
         self._is_on = device.json["CURRENT_VALUE"] == "1"
 
@@ -173,3 +176,74 @@ class DivusSwitchLightEntity(DivusLightEntity):
             _LOGGER.debug(
                 "Updated state of %s to is_on=%s", self._attr_name, self._is_on
             )
+
+
+class DivusColorTempLightEntity(DivusDimLightEntity):
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        return {ColorMode.COLOR_TEMP}
+
+    @property
+    def color_temp(self) -> int | None:
+        return int(self.color_temp_value) if self.color_temp_value else None
+
+    def __init__(self, coordinator: DivusCoordinator, device: DeviceDto) -> None:
+        super().__init__(coordinator, device)
+        self._attr_unique_id = f"{self._attr_unique_id}_color_temp"
+        self.type = TypeEnum.COLOR_TEMP
+        self._attr_color_mode = ColorMode.COLOR_TEMP
+
+        current_color_temp_value_device = next(
+            (dev for dev in device.sub_elements if dev["RENDERING_ID"] == "418"), None
+        )
+        self.color_temp_device_id = (
+            current_color_temp_value_device["ID"]
+            if current_color_temp_value_device
+            else ""
+        )
+        self.color_temp_value = (
+            current_color_temp_value_device["CURRENT_VALUE"]
+            if current_color_temp_value_device
+            else "0"
+        )
+
+        self.update_device_ids = {
+            self.color_temp_device_id,
+            self.dim_device_id,
+            self.switch_device_id,
+        }
+        _LOGGER.debug(
+            "Adding update IDs for dim and color light %s: %s",
+            self._attr_name,
+            self.update_device_ids,
+        )
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        await super().async_turn_on(**kwargs)
+        if self.color_temp_device_id is None:
+            _LOGGER.error(
+                "Color temp light device %s is missing color temp device ID",
+                self._attr_name,
+            )
+            return
+        if "color_temp_kelvin" in kwargs:
+            await self.coordinator.api.set_value(
+                self.color_temp_device_id, str(kwargs["color_temp_kelvin"])
+            )
+            _LOGGER.debug(
+                "Set color temp of %s to %s",
+                self._attr_name,
+                kwargs["color_temp_kelvin"],
+            )
+
+    def update_state(self, state: DeviceStateDto) -> None:
+        super().update_state(state)
+        if state.id == self.color_temp_device_id:
+            new_value = state.current_value
+            if new_value != self.color_temp_value:
+                self.color_temp_value = new_value
+                _LOGGER.debug(
+                    "Updated color temp value of %s to color_temp_value=%s",
+                    self._attr_name,
+                    self.color_temp_value,
+                )

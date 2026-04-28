@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from homeassistant.components.cover import (
     CoverDeviceClass,
@@ -71,7 +72,30 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
             shutter_short_device["ID"] if shutter_short_device else ""
         )
 
-        self.update_device_ids = {self.shutter_long_id, self.shutter_short_id}
+        position_device = next(
+            (dev for dev in device.sub_elements if dev["RENDERING_ID"] == "28"), None
+        )
+        if position_device:
+            self.position_device_id: str = position_device["ID"]
+            self._attr_current_cover_position: int | None = 100 - (
+                int(position_device["CURRENT_VALUE"])
+                if position_device["CURRENT_VALUE"].isdigit()
+                else 0
+            )
+            self._attr_supported_features = (
+                self._attr_supported_features
+                if (self._attr_supported_features is not None)
+                else CoverEntityFeature(0)
+            ) | CoverEntityFeature.SET_POSITION
+        else:
+            self.position_device_id: str = ""
+            self._attr_current_cover_position: int | None = None
+
+        self.update_device_ids = {
+            self.shutter_long_id,
+            self.shutter_short_id,
+            self.position_device_id,
+        }
         _LOGGER.debug("Adding cover device: %s", self._attr_name)
 
     async def async_open_cover(self) -> None:
@@ -99,9 +123,22 @@ class DivusDeviceCoverEntity(DivusCoverEntity):
         await self.coordinator.api.set_value(self.shutter_short_id, "1")
         _LOGGER.debug("Tilt closed cover device: %s", self._attr_name)
 
+    async def async_set_cover_position(self, **kwargs: Any) -> None:
+        """Set the cover position."""
+        if "position" in kwargs and self.position_device_id:
+            position = 100 - kwargs["position"]
+            await self.coordinator.api.set_value(self.position_device_id, str(position))
+            _LOGGER.debug(
+                "Set cover device %s position to %d",
+                self._attr_name,
+                kwargs["position"],
+            )
+
     def update_state(self, state: DeviceStateDto) -> None:
         if state.id == self.shutter_long_id:
             self._attr_is_closed = state.current_value == "1"
+        if state.id == self.position_device_id and state.current_value.isdigit():
+            self._attr_current_cover_position = 100 - int(state.current_value)
 
 
 class DivusGlobalCoverEntity(DivusCoverEntity):
