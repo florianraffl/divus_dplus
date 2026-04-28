@@ -1,0 +1,32 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to DIVUS D+",
+        "data": {
+          "host": "Host",
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "covers": {
+        "title": "Cover options",
+        "data": {
+          "add_room_covers": "Add room cover entities (one per room with multiple shutters)",
+          "add_global_cover": "Add global cover entity (controls all shutters at once)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Cover options",
+        "data": {
+          "add_room_covers": "Add room cover entities (one per room with multiple shutters)",
+          "add_global_cover": "Add global cover entity (controls all shutters at once)"
+        }
+      }
+    }
+  }
+}

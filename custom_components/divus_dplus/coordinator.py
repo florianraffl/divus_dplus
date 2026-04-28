@@ -8,7 +8,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from custom_components.divus_dplus.api import DivusDplusApi
-from custom_components.divus_dplus.const import DOMAIN
+from custom_components.divus_dplus.const import (
+    CONF_ADD_GLOBAL_COVER,
+    CONF_ADD_ROOM_COVERS,
+    DOMAIN,
+)
 
 if TYPE_CHECKING:
     from custom_components.divus_dplus.entity import DivusEntity
@@ -66,9 +70,15 @@ class DivusCoordinator(DataUpdateCoordinator):
             DivusSwitchEntity,
         )
 
+        add_room_covers = self.entry.options.get(CONF_ADD_ROOM_COVERS, True)
+        add_global_cover = self.entry.options.get(CONF_ADD_GLOBAL_COVER, True)
+
         api_devices = await self.api.get_devices()
 
         self.devices = []
+        all_shutter_long_ids: list[str] = []
+        all_shutter_short_ids: list[str] = []
+
         for room_name, devices_list in groupby(api_devices, lambda d: d.parentName):
             devices = list(devices_list)
             _LOGGER.info("Room '%s' has %d devices.", room_name, len(devices))
@@ -125,35 +135,27 @@ class DivusCoordinator(DataUpdateCoordinator):
                     for dev in cover_entities
                     if dev.shutter_short_id
                 ]
-                room_entities.add(
-                    DivusRoomCoverEntity(
-                        self,
-                        devices[0].parentId,
-                        f"{room_name} Alle",
-                        shutter_long_ids,
-                        shutter_short_ids,
+                all_shutter_long_ids.extend(shutter_long_ids)
+                all_shutter_short_ids.extend(shutter_short_ids)
+                if add_room_covers:
+                    room_entities.add(
+                        DivusRoomCoverEntity(
+                            self,
+                            devices[0].parentId,
+                            f"{room_name} Alle",
+                            shutter_long_ids,
+                            shutter_short_ids,
+                        )
                     )
-                )
             self.devices.extend(room_entities)
 
-        all_cover_entities: list[DivusDeviceCoverEntity] = [
-            dev for dev in self.devices if isinstance(dev, DivusDeviceCoverEntity)
-        ]
-        if all_cover_entities:
-            shutter_long_ids = [
-                dev.shutter_long_id for dev in all_cover_entities if dev.shutter_long_id
-            ]
-            shutter_short_ids = [
-                dev.shutter_short_id
-                for dev in all_cover_entities
-                if dev.shutter_short_id
-            ]
+        if add_global_cover and all_shutter_long_ids:
             self.devices.append(
                 DivusGlobalCoverEntity(
                     self,
                     self.entry.entry_id,
-                    shutter_long_ids,
-                    shutter_short_ids,
+                    all_shutter_long_ids,
+                    all_shutter_short_ids,
                 )
             )
 
