@@ -12,7 +12,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input:
             # you can add test-connection here
-            return self.async_create_entry(title="DIVUS D+", data=user_input)
+            return self.async_create_entry(title=user_input["host"], data=user_input)
 
         schema = vol.Schema(
             {
