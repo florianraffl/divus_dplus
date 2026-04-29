@@ -126,27 +126,25 @@ class DivusCoordinator(DataUpdateCoordinator):
                 for dev in room_entities
                 if isinstance(dev, DivusDeviceCoverEntity)
             ]
-            if len(cover_entities) > 1:
-                shutter_long_ids = [
-                    dev.shutter_long_id for dev in cover_entities if dev.shutter_long_id
-                ]
-                shutter_short_ids = [
-                    dev.shutter_short_id
-                    for dev in cover_entities
-                    if dev.shutter_short_id
-                ]
-                all_shutter_long_ids.extend(shutter_long_ids)
-                all_shutter_short_ids.extend(shutter_short_ids)
-                if add_room_covers:
-                    room_entities.add(
-                        DivusRoomCoverEntity(
-                            self,
-                            devices[0].parentId,
-                            f"{room_name} Alle",
-                            shutter_long_ids,
-                            shutter_short_ids,
-                        )
+            shutter_long_ids = [
+                dev.shutter_long_id for dev in cover_entities if dev.shutter_long_id
+            ]
+            shutter_short_ids = [
+                dev.shutter_short_id for dev in cover_entities if dev.shutter_short_id
+            ]
+            all_shutter_long_ids.extend(shutter_long_ids)
+            all_shutter_short_ids.extend(shutter_short_ids)
+
+            if len(cover_entities) > 1 and add_room_covers:
+                room_entities.add(
+                    DivusRoomCoverEntity(
+                        self,
+                        devices[0].parentId,
+                        f"{room_name} Alle",
+                        shutter_long_ids,
+                        shutter_short_ids,
                     )
+                )
             self.devices.extend(room_entities)
 
         if add_global_cover and all_shutter_long_ids:

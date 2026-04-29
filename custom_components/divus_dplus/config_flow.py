@@ -34,9 +34,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         self._data: dict = {}
 
-    async def async_step_user(
-        self, user_input: dict | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict | None = None) -> ConfigFlowResult:
         errors = {}
 
         if user_input is not None:
@@ -76,9 +74,7 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class DivusOptionsFlow(config_entries.OptionsFlow):
-    async def async_step_init(
-        self, user_input: dict | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_init(self, user_input: dict | None = None) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(data=user_input)
 
