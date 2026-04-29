@@ -20,4 +20,4 @@ numpy
 pymicro-vad
 pyserial
 pyspeex-noise
-PyTurboJPEG==1.8.0
+PyTurboJPEG==2.2.0
