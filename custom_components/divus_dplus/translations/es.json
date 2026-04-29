@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar a DIVUS D+",
+        "data": {
+          "host": "Host",
+          "username": "Usuario",
+          "password": "Contraseña"
+        }
+      },
+      "covers": {
+        "title": "Opciones de persianas",
+        "data": {
+          "add_room_covers": "Agregar entidades de persiana por habitación (una por habitación con múltiples persianas)",
+          "add_global_cover": "Agregar entidad de persiana global (controla todas las persianas a la vez)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Credenciales",
+        "data": {
+          "username": "Usuario",
+          "password": "Contraseña"
+        }
+      },
+      "covers": {
+        "title": "Opciones de persianas",
+        "data": {
+          "add_room_covers": "Agregar entidades de persiana por habitación (una por habitación con múltiples persianas)",
+          "add_global_cover": "Agregar entidad de persiana global (controla todas las persianas a la vez)"
+        }
+      }
+    }
+  }
+}

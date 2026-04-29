@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Koble til DIVUS D+",
+        "data": {
+          "host": "Vert",
+          "username": "Brukernavn",
+          "password": "Passord"
+        }
+      },
+      "covers": {
+        "title": "Persiennevalg",
+        "data": {
+          "add_room_covers": "Legg til persienneenheter per rom (én per rom med flere persienner)",
+          "add_global_cover": "Legg til global persienneenhet (styrer alle persienner samtidig)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Påloggingsopplysninger",
+        "data": {
+          "username": "Brukernavn",
+          "password": "Passord"
+        }
+      },
+      "covers": {
+        "title": "Persiennevalg",
+        "data": {
+          "add_room_covers": "Legg til persienneenheter per rom (én per rom med flere persienner)",
+          "add_global_cover": "Legg til global persienneenhet (styrer alle persienner samtidig)"
+        }
+      }
+    }
+  }
+}

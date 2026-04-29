@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connetti a DIVUS D+",
+        "data": {
+          "host": "Host",
+          "username": "Nome utente",
+          "password": "Password"
+        }
+      },
+      "covers": {
+        "title": "Opzioni tende",
+        "data": {
+          "add_room_covers": "Aggiungi entità tenda per stanza (una per stanza con più tapparelle)",
+          "add_global_cover": "Aggiungi entità tenda globale (controlla tutte le tapparelle contemporaneamente)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Credenziali",
+        "data": {
+          "username": "Nome utente",
+          "password": "Password"
+        }
+      },
+      "covers": {
+        "title": "Opzioni tende",
+        "data": {
+          "add_room_covers": "Aggiungi entità tenda per stanza (una per stanza con più tapparelle)",
+          "add_global_cover": "Aggiungi entità tenda globale (controlla tutte le tapparelle contemporaneamente)"
+        }
+      }
+    }
+  }
+}
