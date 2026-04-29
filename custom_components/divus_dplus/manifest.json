@@ -1,7 +1,7 @@
 {
   "domain": "divus_dplus",
   "name": "DIVUS D+ KNX",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "documentation": "https://github.com/florianraffl/divus_dplus",
   "issue_tracker": "https://github.com/florianraffl/divus_dplus/issues",
   "requirements": [],
