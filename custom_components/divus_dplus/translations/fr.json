@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion à DIVUS D+",
+        "data": {
+          "host": "Hôte",
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      },
+      "covers": {
+        "title": "Options des volets",
+        "data": {
+          "add_room_covers": "Ajouter des entités de volet par pièce (une par pièce avec plusieurs volets)",
+          "add_global_cover": "Ajouter une entité de volet globale (contrôle tous les volets en même temps)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Identifiants",
+        "data": {
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      },
+      "covers": {
+        "title": "Options des volets",
+        "data": {
+          "add_room_covers": "Ajouter des entités de volet par pièce (une par pièce avec plusieurs volets)",
+          "add_global_cover": "Ajouter une entité de volet globale (contrôle tous les volets en même temps)"
+        }
+      }
+    }
+  }
+}

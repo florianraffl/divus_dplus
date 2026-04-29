@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Połącz z DIVUS D+",
+        "data": {
+          "host": "Host",
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
+      },
+      "covers": {
+        "title": "Opcje rolet",
+        "data": {
+          "add_room_covers": "Dodaj encje rolet dla pokoju (jedna na pokój z wieloma roletami)",
+          "add_global_cover": "Dodaj globalną encję rolety (steruje wszystkimi roletami jednocześnie)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dane logowania",
+        "data": {
+          "username": "Nazwa użytkownika",
+          "password": "Hasło"
+        }
+      },
+      "covers": {
+        "title": "Opcje rolet",
+        "data": {
+          "add_room_covers": "Dodaj encje rolet dla pokoju (jedna na pokój z wieloma roletami)",
+          "add_global_cover": "Dodaj globalną encję rolety (steruje wszystkimi roletami jednocześnie)"
+        }
+      }
+    }
+  }
+}

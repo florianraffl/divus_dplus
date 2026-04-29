@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Anslut till DIVUS D+",
+        "data": {
+          "host": "Värd",
+          "username": "Användarnamn",
+          "password": "Lösenord"
+        }
+      },
+      "covers": {
+        "title": "Persiennalternativ",
+        "data": {
+          "add_room_covers": "Lägg till persiennentiteter per rum (en per rum med flera persienner)",
+          "add_global_cover": "Lägg till global persiennentitet (styr alla persienner samtidigt)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Inloggningsuppgifter",
+        "data": {
+          "username": "Användarnamn",
+          "password": "Lösenord"
+        }
+      },
+      "covers": {
+        "title": "Persiennalternativ",
+        "data": {
+          "add_room_covers": "Lägg till persiennentiteter per rum (en per rum med flera persienner)",
+          "add_global_cover": "Lägg till global persiennentitet (styr alla persienner samtidigt)"
+        }
+      }
+    }
+  }
+}

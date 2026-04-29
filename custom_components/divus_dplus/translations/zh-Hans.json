@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "连接到 DIVUS D+",
+        "data": {
+          "host": "主机",
+          "username": "用户名",
+          "password": "密码"
+        }
+      },
+      "covers": {
+        "title": "遮阳选项",
+        "data": {
+          "add_room_covers": "按房间添加遮阳实体（每个有多个百叶窗的房间添加一个）",
+          "add_global_cover": "添加全局遮阳实体（同时控制所有百叶窗）"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "登录凭据",
+        "data": {
+          "username": "用户名",
+          "password": "密码"
+        }
+      },
+      "covers": {
+        "title": "遮阳选项",
+        "data": {
+          "add_room_covers": "按房间添加遮阳实体（每个有多个百叶窗的房间添加一个）",
+          "add_global_cover": "添加全局遮阳实体（同时控制所有百叶窗）"
+        }
+      }
+    }
+  }
+}

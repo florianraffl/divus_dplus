@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ligar ao DIVUS D+",
+        "data": {
+          "host": "Host",
+          "username": "Utilizador",
+          "password": "Palavra-passe"
+        }
+      },
+      "covers": {
+        "title": "Opções de estores",
+        "data": {
+          "add_room_covers": "Adicionar entidades de estore por divisão (uma por divisão com múltiplos estores)",
+          "add_global_cover": "Adicionar entidade de estore global (controla todos os estores ao mesmo tempo)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Credenciais",
+        "data": {
+          "username": "Utilizador",
+          "password": "Palavra-passe"
+        }
+      },
+      "covers": {
+        "title": "Opções de estores",
+        "data": {
+          "add_room_covers": "Adicionar entidades de estore por divisão (uma por divisão com múltiplos estores)",
+          "add_global_cover": "Adicionar entidade de estore global (controla todos os estores ao mesmo tempo)"
+        }
+      }
+    }
+  }
+}

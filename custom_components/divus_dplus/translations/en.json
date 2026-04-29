@@ -21,6 +21,13 @@
   "options": {
     "step": {
       "init": {
+        "title": "Credentials",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "covers": {
         "title": "Cover options",
         "data": {
           "add_room_covers": "Add room cover entities (one per room with multiple shutters)",

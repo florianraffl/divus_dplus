@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Verbinding maken met DIVUS D+",
+        "data": {
+          "host": "Host",
+          "username": "Gebruikersnaam",
+          "password": "Wachtwoord"
+        }
+      },
+      "covers": {
+        "title": "Rolgordijn opties",
+        "data": {
+          "add_room_covers": "Rolgordijn-entiteiten per kamer toevoegen (één per kamer met meerdere rolluiken)",
+          "add_global_cover": "Globale rolgordijn-entiteit toevoegen (beheert alle rolluiken tegelijk)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Inloggegevens",
+        "data": {
+          "username": "Gebruikersnaam",
+          "password": "Wachtwoord"
+        }
+      },
+      "covers": {
+        "title": "Rolgordijn opties",
+        "data": {
+          "add_room_covers": "Rolgordijn-entiteiten per kamer toevoegen (één per kamer met meerdere rolluiken)",
+          "add_global_cover": "Globale rolgordijn-entiteit toevoegen (beheert alle rolluiken tegelijk)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit DIVUS D+ verbinden",
+        "data": {
+          "host": "Host",
+          "username": "Benutzername",
+          "password": "Passwort"
+        }
+      },
+      "covers": {
+        "title": "Beschattungsoptionen",
+        "data": {
+          "add_room_covers": "Raum-Beschattungsentitäten hinzufügen (eine pro Raum mit mehreren Rollläden)",
+          "add_global_cover": "Globale Beschattungsentität hinzufügen (steuert alle Rollläden gleichzeitig)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zugangsdaten",
+        "data": {
+          "username": "Benutzername",
+          "password": "Passwort"
+        }
+      },
+      "covers": {
+        "title": "Beschattungsoptionen",
+        "data": {
+          "add_room_covers": "Raum-Beschattungsentitäten hinzufügen (eine pro Raum mit mehreren Rollläden)",
+          "add_global_cover": "Globale Beschattungsentität hinzufügen (steuert alle Rollläden gleichzeitig)"
+        }
+      }
+    }
+  }
+}

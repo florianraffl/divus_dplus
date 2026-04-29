@@ -74,11 +74,37 @@ class DivusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class DivusOptionsFlow(config_entries.OptionsFlow):
+    def __init__(self) -> None:
+        self._credentials: dict = {}
+
     async def async_step_init(self, user_input: dict | None = None) -> ConfigFlowResult:
         if user_input is not None:
+            self._credentials = user_input
+            return await self.async_step_covers()
+
+        schema = vol.Schema(
+            {
+                vol.Optional(
+                    "username",
+                    default=self.config_entry.data.get("username", ""),
+                ): str,
+                vol.Optional(
+                    "password",
+                    default=self.config_entry.data.get("password", ""),
+                ): str,
+            }
+        )
+        return self.async_show_form(step_id="init", data_schema=schema)
+
+    async def async_step_covers(self, user_input: dict | None = None) -> ConfigFlowResult:
+        if user_input is not None:
+            self.hass.config_entries.async_update_entry(
+                self.config_entry,
+                data={**self.config_entry.data, **self._credentials},
+            )
             return self.async_create_entry(data=user_input)
 
         return self.async_show_form(
-            step_id="init",
+            step_id="covers",
             data_schema=_covers_schema(self.config_entry.options),
         )
