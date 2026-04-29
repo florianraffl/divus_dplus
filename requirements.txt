@@ -1,7 +1,7 @@
 colorlog==6.10.1
 homeassistant==2026.3.2
 pip>=26.1
-ruff==0.15.7
+ruff==0.15.12
 pytest>=9.0.3
 
 # HA lazy-loaded dependencies pre-installed to avoid race conditions on first boot
