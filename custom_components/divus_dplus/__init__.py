@@ -1,6 +1,6 @@
 import logging
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryNotReady
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
@@ -78,7 +78,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     api = DivusDplusApi(host, username, password)
 
     coordinator = DivusCoordinator(hass, api, entry)
-    await coordinator.async_config_entry_first_refresh()
+    try:
+        await coordinator.async_config_entry_first_refresh()
+    except Exception as err:
+        raise ConfigEntryNotReady(f"Could not connect to DIVUS D+ at {host}: {err}") from err
 
     _LOGGER.debug("Set up DIVUS D+ entry for host %s", host)
 
