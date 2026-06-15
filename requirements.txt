@@ -2,7 +2,7 @@ colorlog==6.10.1
 homeassistant==2026.3.2
 pip>=26.1
 ruff==0.15.12
-pytest>=9.0.3
+pytest>=9.1.0
 
 # HA lazy-loaded dependencies pre-installed to avoid race conditions on first boot
 aiodiscover
